@@ -2,7 +2,8 @@
 import { LandingPage } from "@/components/LandingPage";
 import { HowItWorks } from "@/components/HowItWorks";
 import { TestFlowManager } from "@/components/TestFlowManager";
-import { useHearingTestFlow } from "@/hooks/useHearingTestFlow";
+import { TopNavigation } from "@/components/TopNavigation";
+import { useHearingTestFlow, TestStep } from "@/hooks/useHearingTestFlow";
 
 const Index = () => {
   const {
@@ -86,36 +87,48 @@ const Index = () => {
     setCurrentStep("aiResults");
   };
 
-  if (currentStep === "landing") {
-    return <LandingPage onStartTest={handleStartTest} />;
-  }
-
-  if (currentStep === "howItWorks") {
-    return <HowItWorks onContinue={handleContinue} />;
-  }
+  const handleNavigate = (step: TestStep) => {
+    setCurrentStep(step);
+  };
 
   return (
-    <TestFlowManager
-      currentStep={currentStep}
-      userInfo={userInfo}
-      answers={answers}
-      headphoneType={headphoneType}
-      connectionMethod={connectionMethod}
-      currentAudioTest={currentAudioTest}
-      testResults={testResults}
-      onUserInfoComplete={handleUserInfoComplete}
-      onQuestionnaireComplete={handleQuestionnaireComplete}
-      onQuietPlaceNext={handleQuietPlaceNext}
-      onHeadphoneSelection={handleHeadphoneSelection}
-      onConnectionMethod={handleConnectionMethod}
-      onVolumeSetupNext={handleVolumeSetupNext}
-      onAudioTestSetupNext={handleAudioTestSetupNext}
-      onReadyCheckNext={handleReadyCheckNext}
-      onHearingTestStartNext={handleHearingTestStartNext}
-      onAudioTestNext={handleAudioTestNext}
-      onApiKeySet={handleApiKeySet}
-      onRetakeTest={resetTest}
-    />
+    <div className="min-h-screen">
+      <TopNavigation currentStep={currentStep} onNavigate={handleNavigate} />
+      
+      <div className="pt-0">
+        {currentStep === "landing" && (
+          <LandingPage onStartTest={handleStartTest} />
+        )}
+
+        {currentStep === "howItWorks" && (
+          <HowItWorks onContinue={handleContinue} />
+        )}
+
+        {currentStep !== "landing" && currentStep !== "howItWorks" && (
+          <TestFlowManager
+            currentStep={currentStep}
+            userInfo={userInfo}
+            answers={answers}
+            headphoneType={headphoneType}
+            connectionMethod={connectionMethod}
+            currentAudioTest={currentAudioTest}
+            testResults={testResults}
+            onUserInfoComplete={handleUserInfoComplete}
+            onQuestionnaireComplete={handleQuestionnaireComplete}
+            onQuietPlaceNext={handleQuietPlaceNext}
+            onHeadphoneSelection={handleHeadphoneSelection}
+            onConnectionMethod={handleConnectionMethod}
+            onVolumeSetupNext={handleVolumeSetupNext}
+            onAudioTestSetupNext={handleAudioTestSetupNext}
+            onReadyCheckNext={handleReadyCheckNext}
+            onHearingTestStartNext={handleHearingTestStartNext}
+            onAudioTestNext={handleAudioTestNext}
+            onApiKeySet={handleApiKeySet}
+            onRetakeTest={resetTest}
+          />
+        )}
+      </div>
+    </div>
   );
 };
 
