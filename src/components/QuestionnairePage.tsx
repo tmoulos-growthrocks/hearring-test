@@ -6,6 +6,7 @@ import { ResultsPage } from "./ResultsPage";
 interface QuestionnairePageProps {
   userInfo: { gender: string; ageCategory: string };
   onComplete?: () => void;
+  stepNumber: number;
 }
 
 const questions = [
@@ -82,7 +83,7 @@ const questions = [
   }
 ];
 
-export const QuestionnairePage = ({ userInfo, onComplete }: QuestionnairePageProps) => {
+export const QuestionnairePage = ({ userInfo, onComplete, stepNumber }: QuestionnairePageProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [isComplete, setIsComplete] = useState(false);
@@ -115,6 +116,7 @@ export const QuestionnairePage = ({ userInfo, onComplete }: QuestionnairePagePro
       questionNumber={currentQuestion + 1}
       totalQuestions={questions.length}
       onAnswer={handleAnswer}
+      stepNumber={stepNumber + currentQuestion}
     />
   );
 };

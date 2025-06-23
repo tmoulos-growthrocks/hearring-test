@@ -5,9 +5,10 @@ import { Headphones, Wifi } from "lucide-react";
 
 interface ConnectionMethodProps {
   onNext: (method: string) => void;
+  stepNumber: number;
 }
 
-export const ConnectionMethod = ({ onNext }: ConnectionMethodProps) => {
+export const ConnectionMethod = ({ onNext, stepNumber }: ConnectionMethodProps) => {
   const [selectedMethod, setSelectedMethod] = useState<string>("");
 
   const handleSelection = (method: string) => {
@@ -17,6 +18,12 @@ export const ConnectionMethod = ({ onNext }: ConnectionMethodProps) => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="absolute top-4 left-4">
+        <span className="bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+          Step {stepNumber}
+        </span>
+      </div>
+      
       <div className="max-w-3xl mx-auto text-center bg-white rounded-2xl shadow-lg p-8">
         <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
           <div 

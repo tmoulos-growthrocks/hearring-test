@@ -5,9 +5,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 interface UserInfoFormProps {
   onComplete: (info: { gender: string; ageCategory: string }) => void;
+  stepNumber: number;
 }
 
-export const UserInfoForm = ({ onComplete }: UserInfoFormProps) => {
+export const UserInfoForm = ({ onComplete, stepNumber }: UserInfoFormProps) => {
   const [gender, setGender] = useState("");
   const [ageCategory, setAgeCategory] = useState("");
 
@@ -19,6 +20,12 @@ export const UserInfoForm = ({ onComplete }: UserInfoFormProps) => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="absolute top-4 left-4">
+        <span className="bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+          Step {stepNumber}
+        </span>
+      </div>
+      
       <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl shadow-lg p-8">
         <div className="w-16 h-1 bg-lime-400 rounded-full mx-auto mb-8"></div>
         

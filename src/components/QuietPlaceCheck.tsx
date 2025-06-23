@@ -5,11 +5,18 @@ import { Armchair } from "lucide-react";
 
 interface QuietPlaceCheckProps {
   onNext: () => void;
+  stepNumber: number;
 }
 
-export const QuietPlaceCheck = ({ onNext }: QuietPlaceCheckProps) => {
+export const QuietPlaceCheck = ({ onNext, stepNumber }: QuietPlaceCheckProps) => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="absolute top-4 left-4">
+        <span className="bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+          Step {stepNumber}
+        </span>
+      </div>
+      
       <div className="max-w-3xl mx-auto text-center bg-white rounded-2xl shadow-lg p-8">
         <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
           <div 

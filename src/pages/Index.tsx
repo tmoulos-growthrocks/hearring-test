@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Headphones, ClipboardList, Volume2, BarChart3 } from "lucide-react";
@@ -93,49 +94,56 @@ const Index = () => {
         totalTests={audioTests.length}
         instruction={audioTests[currentAudioTest - 1].instruction}
         onNext={handleAudioTestNext}
+        stepNumber={17 + currentAudioTest}
       />
     );
   }
 
   if (currentStep === "hearingTestStart") {
-    return <HearingTestStart onNext={handleHearingTestStartNext} />;
+    return <HearingTestStart onNext={handleHearingTestStartNext} stepNumber={17} />;
   }
 
   if (currentStep === "readyCheck") {
-    return <ReadyCheck onNext={handleReadyCheckNext} />;
+    return <ReadyCheck onNext={handleReadyCheckNext} stepNumber={16} />;
   }
 
   if (currentStep === "audioTestSetup") {
-    return <AudioTestSetup onNext={handleAudioTestSetupNext} />;
+    return <AudioTestSetup onNext={handleAudioTestSetupNext} stepNumber={15} />;
   }
 
   if (currentStep === "volumeSetup") {
-    return <VolumeSetup onNext={handleVolumeSetupNext} />;
+    return <VolumeSetup onNext={handleVolumeSetupNext} stepNumber={14} />;
   }
 
   if (currentStep === "connectionMethod") {
-    return <ConnectionMethod onNext={handleConnectionMethod} />;
+    return <ConnectionMethod onNext={handleConnectionMethod} stepNumber={13} />;
   }
 
   if (currentStep === "headphoneSelection") {
-    return <HeadphoneSelection onNext={handleHeadphoneSelection} />;
+    return <HeadphoneSelection onNext={handleHeadphoneSelection} stepNumber={12} />;
   }
 
   if (currentStep === "quietPlace") {
-    return <QuietPlaceCheck onNext={handleQuietPlaceNext} />;
+    return <QuietPlaceCheck onNext={handleQuietPlaceNext} stepNumber={11} />;
   }
 
   if (currentStep === "questionnaire") {
-    return <QuestionnairePage userInfo={userInfo} onComplete={handleQuestionnaireComplete} />;
+    return <QuestionnairePage userInfo={userInfo} onComplete={handleQuestionnaireComplete} stepNumber={4} />;
   }
 
   if (currentStep === "userInfo") {
-    return <UserInfoForm onComplete={handleUserInfoComplete} />;
+    return <UserInfoForm onComplete={handleUserInfoComplete} stepNumber={3} />;
   }
 
   if (currentStep === "howItWorks") {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="absolute top-4 left-4">
+          <span className="bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            Step 2
+          </span>
+        </div>
+        
         <div className="max-w-2xl mx-auto text-center bg-white rounded-2xl shadow-lg p-8">
           <div className="w-16 h-1 bg-lime-400 rounded-full mx-auto mb-8"></div>
           
@@ -187,6 +195,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="absolute top-4 left-4">
+        <span className="bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+          Step 1
+        </span>
+      </div>
+      
       <div className="max-w-4xl mx-auto text-center">
         <h1 className="text-5xl md:text-6xl font-bold text-gray-800 mb-4">
           Check your hearing in less than 5 minutes!
