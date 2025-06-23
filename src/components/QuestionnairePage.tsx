@@ -5,6 +5,7 @@ import { ResultsPage } from "./ResultsPage";
 
 interface QuestionnairePageProps {
   userInfo: { gender: string; ageCategory: string };
+  onComplete?: () => void;
 }
 
 const questions = [
@@ -81,7 +82,7 @@ const questions = [
   }
 ];
 
-export const QuestionnairePage = ({ userInfo }: QuestionnairePageProps) => {
+export const QuestionnairePage = ({ userInfo, onComplete }: QuestionnairePageProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [isComplete, setIsComplete] = useState(false);
@@ -94,11 +95,18 @@ export const QuestionnairePage = ({ userInfo }: QuestionnairePageProps) => {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       setIsComplete(true);
+      if (onComplete) {
+        onComplete();
+      }
     }
   };
 
-  if (isComplete) {
+  if (isComplete && !onComplete) {
     return <ResultsPage userInfo={userInfo} answers={answers} />;
+  }
+
+  if (isComplete && onComplete) {
+    return null; // Let parent handle the next step
   }
 
   return (

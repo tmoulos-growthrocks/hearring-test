@@ -1,13 +1,35 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Headphones, ClipboardList, Volume2, BarChart3 } from "lucide-react";
 import { UserInfoForm } from "@/components/UserInfoForm";
 import { QuestionnairePage } from "@/components/QuestionnairePage";
+import { QuietPlaceCheck } from "@/components/QuietPlaceCheck";
+import { HeadphoneSelection } from "@/components/HeadphoneSelection";
+import { ConnectionMethod } from "@/components/ConnectionMethod";
+import { VolumeSetup } from "@/components/VolumeSetup";
+import { AudioTestSetup } from "@/components/AudioTestSetup";
+import { ReadyCheck } from "@/components/ReadyCheck";
+import { HearingTestStart } from "@/components/HearingTestStart";
+import { AudioTest } from "@/components/AudioTest";
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState("landing");
   const [userInfo, setUserInfo] = useState({ gender: "", ageCategory: "" });
+  const [headphoneType, setHeadphoneType] = useState("");
+  const [connectionMethod, setConnectionMethod] = useState("");
+  const [currentAudioTest, setCurrentAudioTest] = useState(1);
+
+  const audioTests = [
+    {
+      instruction: "Click the +/- buttons to reach the LOUDEST level you can listen to without discomfort (e.g. you could listen to it for 15 minutes).",
+    },
+    {
+      instruction: "Click the +/- buttons until the person is speaking just loud enough to understand.",
+    },
+    {
+      instruction: "Click the +/- buttons until you can barely hear the sound.",
+    }
+  ];
 
   const handleStartTest = () => {
     setCurrentStep("howItWorks");
@@ -22,8 +44,89 @@ const Index = () => {
     setCurrentStep("questionnaire");
   };
 
+  const handleQuestionnaireComplete = () => {
+    setCurrentStep("quietPlace");
+  };
+
+  const handleQuietPlaceNext = () => {
+    setCurrentStep("headphoneSelection");
+  };
+
+  const handleHeadphoneSelection = (type: string) => {
+    setHeadphoneType(type);
+    setCurrentStep("connectionMethod");
+  };
+
+  const handleConnectionMethod = (method: string) => {
+    setConnectionMethod(method);
+    setCurrentStep("volumeSetup");
+  };
+
+  const handleVolumeSetupNext = () => {
+    setCurrentStep("audioTestSetup");
+  };
+
+  const handleAudioTestSetupNext = () => {
+    setCurrentStep("readyCheck");
+  };
+
+  const handleReadyCheckNext = () => {
+    setCurrentStep("hearingTestStart");
+  };
+
+  const handleHearingTestStartNext = () => {
+    setCurrentStep("audioTest");
+  };
+
+  const handleAudioTestNext = () => {
+    if (currentAudioTest < audioTests.length) {
+      setCurrentAudioTest(currentAudioTest + 1);
+    } else {
+      setCurrentStep("questionnaire"); // Complete the flow - would go to results
+    }
+  };
+
+  if (currentStep === "audioTest") {
+    return (
+      <AudioTest
+        testNumber={currentAudioTest}
+        totalTests={audioTests.length}
+        instruction={audioTests[currentAudioTest - 1].instruction}
+        onNext={handleAudioTestNext}
+      />
+    );
+  }
+
+  if (currentStep === "hearingTestStart") {
+    return <HearingTestStart onNext={handleHearingTestStartNext} />;
+  }
+
+  if (currentStep === "readyCheck") {
+    return <ReadyCheck onNext={handleReadyCheckNext} />;
+  }
+
+  if (currentStep === "audioTestSetup") {
+    return <AudioTestSetup onNext={handleAudioTestSetupNext} />;
+  }
+
+  if (currentStep === "volumeSetup") {
+    return <VolumeSetup onNext={handleVolumeSetupNext} />;
+  }
+
+  if (currentStep === "connectionMethod") {
+    return <ConnectionMethod onNext={handleConnectionMethod} />;
+  }
+
+  if (currentStep === "headphoneSelection") {
+    return <HeadphoneSelection onNext={handleHeadphoneSelection} />;
+  }
+
+  if (currentStep === "quietPlace") {
+    return <QuietPlaceCheck onNext={handleQuietPlaceNext} />;
+  }
+
   if (currentStep === "questionnaire") {
-    return <QuestionnairePage userInfo={userInfo} />;
+    return <QuestionnairePage userInfo={userInfo} onComplete={handleQuestionnaireComplete} />;
   }
 
   if (currentStep === "userInfo") {
