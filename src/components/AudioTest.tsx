@@ -64,7 +64,7 @@ export const AudioTest = ({ testNumber, totalTests, instruction, onNext, stepNum
       
       playNote();
       
-      // Stop after 3 seconds
+      // Stop after 10 seconds
       setTimeout(() => {
         if (osc) {
           osc.stop();
@@ -72,7 +72,7 @@ export const AudioTest = ({ testNumber, totalTests, instruction, onNext, stepNum
           setOscillator(null);
           setGainNode(null);
         }
-      }, 3000);
+      }, 10000);
       
     } else {
       // Stop playing
