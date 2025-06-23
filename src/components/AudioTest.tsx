@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Volume2, VolumeX } from "lucide-react";
+import { Minus, Plus, Volume2, VolumeX, Play, Pause } from "lucide-react";
 
 interface AudioTestProps {
   testNumber: number;
@@ -13,9 +13,69 @@ interface AudioTestProps {
 
 export const AudioTest = ({ testNumber, totalTests, instruction, onNext, stepNumber }: AudioTestProps) => {
   const [volume, setVolume] = useState(50);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [oscillator, setOscillator] = useState<OscillatorNode | null>(null);
 
   const adjustVolume = (change: number) => {
     setVolume(Math.max(0, Math.min(100, volume + change)));
+  };
+
+  const playRandomMusic = () => {
+    if (!isPlaying) {
+      // Create audio context and play a simple melody
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      setAudioContext(ctx);
+      
+      // Create a gain node for volume control
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = volume / 100 * 0.3; // Scale volume and keep it reasonable
+      gainNode.connect(ctx.destination);
+      
+      // Create oscillator for a simple melody
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      
+      // Play a simple melody pattern
+      const frequencies = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00]; // C4, D4, E4, F4, G4, A4
+      let currentNote = 0;
+      
+      const playNote = () => {
+        if (currentNote < frequencies.length && isPlaying) {
+          osc.frequency.setValueAtTime(frequencies[currentNote], ctx.currentTime);
+          currentNote++;
+          setTimeout(playNote, 500); // Change note every 500ms
+        }
+      };
+      
+      osc.connect(gainNode);
+      osc.start();
+      setOscillator(osc);
+      setIsPlaying(true);
+      
+      playNote();
+      
+      // Stop after 3 seconds
+      setTimeout(() => {
+        if (osc) {
+          osc.stop();
+          setIsPlaying(false);
+          setOscillator(null);
+        }
+      }, 3000);
+      
+    } else {
+      // Stop playing
+      if (oscillator) {
+        oscillator.stop();
+        setOscillator(null);
+      }
+      if (audioContext) {
+        audioContext.close();
+        setAudioContext(null);
+      }
+      setIsPlaying(false);
+    }
   };
 
   return (
@@ -57,6 +117,17 @@ export const AudioTest = ({ testNumber, totalTests, instruction, onNext, stepNum
             <div className="text-4xl">🗣️</div>
           )}
         </div>
+        
+        {testNumber === 3 && (
+          <div className="mb-8">
+            <Button
+              onClick={playRandomMusic}
+              className={`w-32 h-16 ${isPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white text-lg font-bold rounded-xl mb-6`}
+            >
+              {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
+            </Button>
+          </div>
+        )}
         
         <div className="mb-8">
           <div className="flex items-center justify-center space-x-4 mb-6">
