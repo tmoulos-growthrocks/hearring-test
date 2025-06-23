@@ -1,122 +1,88 @@
-
 import { useState } from "react";
-import { QuestionCard } from "./QuestionCard";
-import { ResultsPage } from "./ResultsPage";
+import { Button } from "@/components/ui/button";
 
 interface QuestionnairePageProps {
   userInfo: { gender: string; ageCategory: string };
-  onComplete?: () => void;
+  onComplete: (answers: string[]) => void;
   stepNumber: number;
 }
 
-const questions = [
-  {
-    id: 1,
-    question: "How would you describe your hearing?",
-    options: [
-      "I have a lot of trouble",
-      "I have some trouble", 
-      "I have a little trouble",
-      "Good",
-      "Excellent"
-    ]
-  },
-  {
-    id: 2,
-    question: "In conversations in a quiet environment, do people seem to mumble?",
-    options: [
-      "Always",
-      "Often",
-      "Occasionally", 
-      "Rarely",
-      "Never"
-    ]
-  },
-  {
-    id: 3,
-    question: "Do you find it hard to have a conversation on the phone?",
-    options: [
-      "Always",
-      "Often",
-      "Occasionally",
-      "Rarely", 
-      "Never"
-    ]
-  },
-  {
-    id: 4,
-    question: "Do you find it hard to follow conversations in a noisy environment? ...such as in noisy restaurants or in a crowd?",
-    options: [
-      "Always",
-      "Often",
-      "Occasionally",
-      "Rarely",
-      "Never"
-    ]
-  },
-  {
-    id: 5,
-    question: "Has anyone ever suggested that you may have hearing loss?",
-    options: [
-      "Yes",
-      "No"
-    ]
-  },
-  {
-    id: 6,
-    question: "Do you feel like one ear hears significantly better than the other one? If so, which one?",
-    options: [
-      "Left",
-      "Right",
-      "Both about the same"
-    ]
-  },
-  {
-    id: 7,
-    question: "Who do you have the most trouble hearing?",
-    options: [
-      "Men",
-      "Women",
-      "Everyone",
-      "I don't have difficulty"
-    ]
-  }
-];
-
 export const QuestionnairePage = ({ userInfo, onComplete, stepNumber }: QuestionnairePageProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<string[]>([]);
-  const [isComplete, setIsComplete] = useState(false);
+  const [answers, setAnswers] = useState<{ [key: number]: string }>({});
+
+  const questions = [
+    "I have difficulty hearing over the telephone",
+    "I have trouble hearing when there is background noise",
+    "I have difficulty hearing when someone is not facing me",
+    "I have trouble understanding speech, even when I can hear it",
+    "I have difficulty hearing high-pitched sounds",
+    "I find myself asking others to repeat themselves",
+    "I experience ringing in my ears",
+    "I feel like people are mumbling when they talk",
+    "I have trouble following conversations in restaurants or meetings",
+    "I struggle to hear the TV or radio at a volume that others find comfortable",
+  ];
 
   const handleAnswer = (answer: string) => {
-    const newAnswers = [...answers, answer];
-    setAnswers(newAnswers);
-    
+    setAnswers({ ...answers, [currentQuestion]: answer });
+  };
+
+  const handleComplete = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      setIsComplete(true);
-      if (onComplete) {
-        onComplete();
-      }
+      onComplete(Object.values(answers));
     }
   };
 
-  if (isComplete && !onComplete) {
-    return <ResultsPage userInfo={userInfo} answers={answers} />;
-  }
-
-  if (isComplete && onComplete) {
-    return null; // Let parent handle the next step
-  }
-
   return (
-    <QuestionCard
-      question={questions[currentQuestion]}
-      questionNumber={currentQuestion + 1}
-      totalQuestions={questions.length}
-      onAnswer={handleAnswer}
-      stepNumber={stepNumber + currentQuestion}
-    />
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="absolute top-4 left-4">
+        <span className="bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+          Step {stepNumber}
+        </span>
+      </div>
+      
+      <div className="max-w-3xl mx-auto text-center bg-white rounded-2xl shadow-lg p-8">
+        <div className="w-16 h-1 bg-lime-400 rounded-full mx-auto mb-8"></div>
+        
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">
+          Question {currentQuestion + 1}/{questions.length}
+        </h1>
+        
+        <p className="text-lg text-gray-600 mb-12 leading-relaxed">
+          {questions[currentQuestion]}
+        </p>
+        
+        <div className="space-y-6 mb-12">
+          <Button 
+            onClick={() => handleAnswer("Yes")}
+            className={`w-full py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 ${answers[currentQuestion] === "Yes" ? "bg-orange-600 text-white" : "bg-gray-100 text-gray-800 hover:bg-orange-200"}`}
+          >
+            Yes
+          </Button>
+          <Button 
+            onClick={() => handleAnswer("No")}
+            className={`w-full py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 ${answers[currentQuestion] === "No" ? "bg-orange-600 text-white" : "bg-gray-100 text-gray-800 hover:bg-orange-200"}`}
+          >
+            No
+          </Button>
+          <Button 
+            onClick={() => handleAnswer("Sometimes")}
+            className={`w-full py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 ${answers[currentQuestion] === "Sometimes" ? "bg-orange-600 text-white" : "bg-gray-100 text-gray-800 hover:bg-orange-200"}`}
+          >
+            Sometimes
+          </Button>
+        </div>
+        
+        <Button 
+          onClick={handleComplete}
+          className="bg-orange-600 hover:bg-orange-700 text-white px-12 py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
+        >
+          {currentQuestion === questions.length - 1 ? "See Results" : "Next Question"}
+        </Button>
+      </div>
+    </div>
   );
 };

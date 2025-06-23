@@ -12,14 +12,18 @@ import { ReadyCheck } from "@/components/ReadyCheck";
 import { HearingTestStart } from "@/components/HearingTestStart";
 import { AudioTest } from "@/components/AudioTest";
 import { HearingTestResults } from "@/components/HearingTestResults";
+import { AIHearingResults } from "@/components/AIHearingResults";
+import { ApiKeyInput } from "@/components/ApiKeyInput";
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState("landing");
   const [userInfo, setUserInfo] = useState({ gender: "", ageCategory: "" });
+  const [answers, setAnswers] = useState<string[]>([]);
   const [headphoneType, setHeadphoneType] = useState("");
   const [connectionMethod, setConnectionMethod] = useState("");
   const [currentAudioTest, setCurrentAudioTest] = useState(1);
   const [testResults, setTestResults] = useState({ leftEar: 0, rightEar: 0 });
+  const [apiKey, setApiKey] = useState<string | null>(null);
 
   const audioTests = [
     {
@@ -46,7 +50,8 @@ const Index = () => {
     setCurrentStep("questionnaire");
   };
 
-  const handleQuestionnaireComplete = () => {
+  const handleQuestionnaireComplete = (questionnaireAnswers: string[]) => {
+    setAnswers(questionnaireAnswers);
     setCurrentStep("quietPlace");
   };
 
@@ -88,8 +93,21 @@ const Index = () => {
       const leftEarScore = Math.floor(Math.random() * 21); // 0-20
       const rightEarScore = Math.floor(Math.random() * 21); // 0-20
       setTestResults({ leftEar: leftEarScore, rightEar: rightEarScore });
-      setCurrentStep("results");
+      
+      // Check if API key exists
+      const storedApiKey = localStorage.getItem('openai_api_key');
+      if (storedApiKey) {
+        setApiKey(storedApiKey);
+        setCurrentStep("aiResults");
+      } else {
+        setCurrentStep("apiKeyInput");
+      }
     }
+  };
+
+  const handleApiKeySet = (key: string) => {
+    setApiKey(key);
+    setCurrentStep("aiResults");
   };
 
   const handleRetakeTest = () => {
@@ -97,9 +115,27 @@ const Index = () => {
     setCurrentAudioTest(1);
     setTestResults({ leftEar: 0, rightEar: 0 });
     setUserInfo({ gender: "", ageCategory: "" });
+    setAnswers([]);
     setHeadphoneType("");
     setConnectionMethod("");
+    setApiKey(null);
   };
+
+  if (currentStep === "apiKeyInput") {
+    return <ApiKeyInput onApiKeySet={handleApiKeySet} />;
+  }
+
+  if (currentStep === "aiResults") {
+    return (
+      <AIHearingResults
+        userInfo={userInfo}
+        answers={answers}
+        leftEarScore={testResults.leftEar}
+        rightEarScore={testResults.rightEar}
+        onRetakeTest={handleRetakeTest}
+      />
+    );
+  }
 
   if (currentStep === "results") {
     return (
