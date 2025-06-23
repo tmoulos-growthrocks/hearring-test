@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Headphones, ClipboardList, Volume2, BarChart3 } from "lucide-react";
@@ -12,6 +11,7 @@ import { AudioTestSetup } from "@/components/AudioTestSetup";
 import { ReadyCheck } from "@/components/ReadyCheck";
 import { HearingTestStart } from "@/components/HearingTestStart";
 import { AudioTest } from "@/components/AudioTest";
+import { HearingTestResults } from "@/components/HearingTestResults";
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState("landing");
@@ -19,6 +19,7 @@ const Index = () => {
   const [headphoneType, setHeadphoneType] = useState("");
   const [connectionMethod, setConnectionMethod] = useState("");
   const [currentAudioTest, setCurrentAudioTest] = useState(1);
+  const [testResults, setTestResults] = useState({ leftEar: 0, rightEar: 0 });
 
   const audioTests = [
     {
@@ -83,9 +84,32 @@ const Index = () => {
     if (currentAudioTest < audioTests.length) {
       setCurrentAudioTest(currentAudioTest + 1);
     } else {
-      setCurrentStep("questionnaire"); // Complete the flow - would go to results
+      // Generate random test results for demonstration
+      const leftEarScore = Math.floor(Math.random() * 21); // 0-20
+      const rightEarScore = Math.floor(Math.random() * 21); // 0-20
+      setTestResults({ leftEar: leftEarScore, rightEar: rightEarScore });
+      setCurrentStep("results");
     }
   };
+
+  const handleRetakeTest = () => {
+    setCurrentStep("landing");
+    setCurrentAudioTest(1);
+    setTestResults({ leftEar: 0, rightEar: 0 });
+    setUserInfo({ gender: "", ageCategory: "" });
+    setHeadphoneType("");
+    setConnectionMethod("");
+  };
+
+  if (currentStep === "results") {
+    return (
+      <HearingTestResults
+        leftEarScore={testResults.leftEar}
+        rightEarScore={testResults.rightEar}
+        onRetakeTest={handleRetakeTest}
+      />
+    );
+  }
 
   if (currentStep === "audioTest") {
     return (
