@@ -40,7 +40,7 @@ export const LandingPage = ({ onStartTest }: LandingPageProps) => {
         
         <Button 
           onClick={onStartTest}
-          className="bg-orange-600 hover:bg-orange-700 text-white px-12 py-4 text-xl rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
+          className="bg-green-600 hover:bg-green-700 text-white px-12 py-4 text-xl rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
         >
           Check My Hearing!
         </Button>
