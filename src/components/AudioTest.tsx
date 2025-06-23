@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Volume2, VolumeX, Play, Pause } from "lucide-react";
@@ -33,8 +32,7 @@ export const AudioTest = ({ testNumber, totalTests, instruction, onNext, stepNum
         const maleVoice = voices.find(voice => 
           voice.name.toLowerCase().includes('male') || 
           voice.name.toLowerCase().includes('david') ||
-          voice.name.toLowerCase().includes('mark') ||
-          voice.gender === 'male'
+          voice.name.toLowerCase().includes('mark')
         ) || voices.find(voice => !voice.name.toLowerCase().includes('female'));
         
         if (maleVoice) {
@@ -65,8 +63,7 @@ export const AudioTest = ({ testNumber, totalTests, instruction, onNext, stepNum
       const maleVoice = voices.find(voice => 
         voice.name.toLowerCase().includes('male') || 
         voice.name.toLowerCase().includes('david') ||
-        voice.name.toLowerCase().includes('mark') ||
-        voice.gender === 'male'
+        voice.name.toLowerCase().includes('mark')
       ) || voices.find(voice => !voice.name.toLowerCase().includes('female'));
       
       if (maleVoice) {
