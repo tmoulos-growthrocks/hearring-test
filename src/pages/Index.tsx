@@ -202,21 +202,21 @@ const Index = () => {
       </div>
       
       <div className="max-w-4xl mx-auto text-center">
-        <h1 className="text-5xl md:text-6xl font-bold text-gray-800 mb-4">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
           Check your hearing in less than 5 minutes!
         </h1>
         
-        <p className="text-xl text-gray-600 mb-12">
+        <p className="text-lg text-gray-600 mb-12">
           You will need a pair of headphones
         </p>
         
         <div className="relative mb-12">
-          <div className="w-64 h-64 md:w-80 md:h-80 mx-auto mb-8 opacity-20">
+          <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-8 opacity-20">
             <Headphones className="w-full h-full text-gray-400" />
           </div>
         </div>
         
-        <p className="text-gray-600 mb-8">
+        <p className="text-sm text-gray-600 mb-8">
           By proceeding, you agree to the terms of our{" "}
           <a href="#" className="text-orange-600 underline font-medium">
             Privacy Statement
