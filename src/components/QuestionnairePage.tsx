@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -25,14 +26,14 @@ export const QuestionnairePage = ({ userInfo, onComplete, stepNumber }: Question
   ];
 
   const handleAnswer = (answer: string) => {
-    setAnswers({ ...answers, [currentQuestion]: answer });
-  };
-
-  const handleComplete = () => {
+    const newAnswers = { ...answers, [currentQuestion]: answer };
+    setAnswers(newAnswers);
+    
+    // Automatically move to next question or complete
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      onComplete(Object.values(answers));
+      onComplete(Object.values(newAnswers));
     }
   };
 
@@ -58,30 +59,23 @@ export const QuestionnairePage = ({ userInfo, onComplete, stepNumber }: Question
         <div className="space-y-6 mb-12">
           <Button 
             onClick={() => handleAnswer("Yes")}
-            className={`w-full py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 ${answers[currentQuestion] === "Yes" ? "bg-orange-600 text-white" : "bg-gray-100 text-gray-800 hover:bg-orange-200"}`}
+            className="w-full py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 bg-gray-100 text-gray-800 hover:bg-orange-600 hover:text-white"
           >
             Yes
           </Button>
           <Button 
             onClick={() => handleAnswer("No")}
-            className={`w-full py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 ${answers[currentQuestion] === "No" ? "bg-orange-600 text-white" : "bg-gray-100 text-gray-800 hover:bg-orange-200"}`}
+            className="w-full py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 bg-gray-100 text-gray-800 hover:bg-orange-600 hover:text-white"
           >
             No
           </Button>
           <Button 
             onClick={() => handleAnswer("Sometimes")}
-            className={`w-full py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 ${answers[currentQuestion] === "Sometimes" ? "bg-orange-600 text-white" : "bg-gray-100 text-gray-800 hover:bg-orange-200"}`}
+            className="w-full py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 bg-gray-100 text-gray-800 hover:bg-orange-600 hover:text-white"
           >
             Sometimes
           </Button>
         </div>
-        
-        <Button 
-          onClick={handleComplete}
-          className="bg-orange-600 hover:bg-orange-700 text-white px-12 py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
-        >
-          {currentQuestion === questions.length - 1 ? "See Results" : "Next Question"}
-        </Button>
       </div>
     </div>
   );
