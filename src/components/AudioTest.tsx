@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Volume2, VolumeX, Play, Pause } from "lucide-react";
 
@@ -16,10 +16,18 @@ export const AudioTest = ({ testNumber, totalTests, instruction, onNext, stepNum
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [oscillator, setOscillator] = useState<OscillatorNode | null>(null);
+  const [gainNode, setGainNode] = useState<GainNode | null>(null);
 
   const adjustVolume = (change: number) => {
     setVolume(Math.max(0, Math.min(100, volume + change)));
   };
+
+  // Update gain node volume when volume state changes
+  useEffect(() => {
+    if (gainNode) {
+      gainNode.gain.value = volume / 100 * 0.3; // Scale volume and keep it reasonable
+    }
+  }, [volume, gainNode]);
 
   const playRandomMusic = () => {
     if (!isPlaying) {
@@ -28,9 +36,10 @@ export const AudioTest = ({ testNumber, totalTests, instruction, onNext, stepNum
       setAudioContext(ctx);
       
       // Create a gain node for volume control
-      const gainNode = ctx.createGain();
-      gainNode.gain.value = volume / 100 * 0.3; // Scale volume and keep it reasonable
-      gainNode.connect(ctx.destination);
+      const gain = ctx.createGain();
+      gain.gain.value = volume / 100 * 0.3; // Scale volume and keep it reasonable
+      gain.connect(ctx.destination);
+      setGainNode(gain);
       
       // Create oscillator for a simple melody
       const osc = ctx.createOscillator();
@@ -48,7 +57,7 @@ export const AudioTest = ({ testNumber, totalTests, instruction, onNext, stepNum
         }
       };
       
-      osc.connect(gainNode);
+      osc.connect(gain);
       osc.start();
       setOscillator(osc);
       setIsPlaying(true);
@@ -61,6 +70,7 @@ export const AudioTest = ({ testNumber, totalTests, instruction, onNext, stepNum
           osc.stop();
           setIsPlaying(false);
           setOscillator(null);
+          setGainNode(null);
         }
       }, 3000);
       
@@ -74,6 +84,7 @@ export const AudioTest = ({ testNumber, totalTests, instruction, onNext, stepNum
         audioContext.close();
         setAudioContext(null);
       }
+      setGainNode(null);
       setIsPlaying(false);
     }
   };
