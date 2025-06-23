@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface Gender {
   id: number;
   name: string;
+  created_at: string;
 }
 
 export const useGenders = () => {
@@ -17,7 +18,7 @@ export const useGenders = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('genders')
-        .select('id, name')
+        .select('id, name, created_at')
         .order('id');
 
       if (error) throw error;
