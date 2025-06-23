@@ -36,10 +36,10 @@ export const UserInfoForm = ({ onComplete, stepNumber }: UserInfoFormProps) => {
         </p>
         
         <div className="space-y-8 mb-12">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <label className="text-lg md:text-xl font-semibold text-gray-800">Gender</label>
             <Select value={gender} onValueChange={setGender}>
-              <SelectTrigger className="w-64 h-12 border-2 border-gray-300 rounded-full">
+              <SelectTrigger className="w-full md:w-64 h-12 border-2 border-gray-300 rounded-full">
                 <SelectValue placeholder="Prefer not to say" />
               </SelectTrigger>
               <SelectContent>
@@ -54,10 +54,10 @@ export const UserInfoForm = ({ onComplete, stepNumber }: UserInfoFormProps) => {
             </Select>
           </div>
           
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <label className="text-lg md:text-xl font-semibold text-gray-800">Age Category</label>
             <Select value={ageCategory} onValueChange={setAgeCategory}>
-              <SelectTrigger className="w-64 h-12 border-2 border-gray-300 rounded-full">
+              <SelectTrigger className="w-full md:w-64 h-12 border-2 border-gray-300 rounded-full">
                 <SelectValue placeholder="70+" />
               </SelectTrigger>
               <SelectContent>
