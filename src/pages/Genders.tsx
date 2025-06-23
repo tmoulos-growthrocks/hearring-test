@@ -17,6 +17,7 @@ const Genders = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [genderToDelete, setGenderToDelete] = useState<{ id: number; name: string } | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const { toast } = useToast();
 
   const handleEdit = (id: number, name: string) => {
@@ -68,39 +69,6 @@ const Genders = () => {
     }
   };
 
-  const handleDeleteClick = (id: number, name: string) => {
-    setGenderToDelete({ id, name });
-    setDeleteDialogOpen(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!genderToDelete) return;
-
-    try {
-      const { error } = await supabase
-        .from('genders')
-        .delete()
-        .eq('id', genderToDelete.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: `"${genderToDelete.name}" has been removed successfully`,
-      });
-      refetch();
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: err instanceof Error ? err.message : 'Failed to delete gender',
-        variant: "destructive",
-      });
-    } finally {
-      setDeleteDialogOpen(false);
-      setGenderToDelete(null);
-    }
-  };
-
   const handleAdd = async () => {
     if (!newGender.trim()) {
       toast({
@@ -149,6 +117,41 @@ const Genders = () => {
     setEditingName("");
     setIsAdding(false);
     setNewGender("");
+  };
+
+  const handleDeleteClick = (id: number, name: string) => {
+    setGenderToDelete({ id, name });
+    setDeleteConfirmation("");
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!genderToDelete || deleteConfirmation !== "DELETE") return;
+
+    try {
+      const { error } = await supabase
+        .from('genders')
+        .delete()
+        .eq('id', genderToDelete.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `"${genderToDelete.name}" has been removed successfully`,
+      });
+      refetch();
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : 'Failed to delete gender',
+        variant: "destructive",
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setGenderToDelete(null);
+      setDeleteConfirmation("");
+    }
   };
 
   if (loading) {
@@ -294,14 +297,24 @@ const Genders = () => {
                               <AlertDialogDescription>
                                 You're about to remove "{genderToDelete?.name}" from the system. 
                                 This action cannot be undone, but don't worry - you can always add it back later if needed! 
-                                Just making sure this is what you intended to do. 😊
+                                <br /><br />
+                                To confirm this action, please type <strong>DELETE</strong> in the field below:
                               </AlertDialogDescription>
                             </AlertDialogHeader>
+                            <div className="my-4">
+                              <Input
+                                value={deleteConfirmation}
+                                onChange={(e) => setDeleteConfirmation(e.target.value)}
+                                placeholder="Type DELETE to confirm"
+                                className="w-full"
+                              />
+                            </div>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogCancel onClick={() => setDeleteConfirmation("")}>Cancel</AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={handleDeleteConfirm}
-                                className="bg-red-600 hover:bg-red-700"
+                                disabled={deleteConfirmation !== "DELETE"}
+                                className="bg-red-600 hover:bg-red-700 disabled:opacity-50"
                               >
                                 Yes, delete it
                               </AlertDialogAction>
@@ -323,28 +336,6 @@ const Genders = () => {
           )}
         </Card>
       </div>
-
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure you want to delete this gender?</AlertDialogTitle>
-            <AlertDialogDescription>
-              You're about to remove "{genderToDelete?.name}" from the system. 
-              This action cannot be undone, but don't worry - you can always add it back later if needed! 
-              Just making sure this is what you intended to do. 😊
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Yes, delete it
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 };
