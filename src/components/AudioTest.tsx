@@ -1,7 +1,7 @@
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, Volume2, VolumeX } from "lucide-react";
+import { Minus, Plus, Volume2, VolumeX, Play, Pause } from "lucide-react";
 
 interface AudioTestProps {
   testNumber: number;
@@ -13,10 +13,84 @@ interface AudioTestProps {
 
 export const AudioTest = ({ testNumber, totalTests, instruction, onNext, stepNumber }: AudioTestProps) => {
   const [volume, setVolume] = useState(50);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   const adjustVolume = (change: number) => {
     setVolume(Math.max(0, Math.min(100, volume + change)));
   };
+
+  const playTestAudio = () => {
+    if (stepNumber === 19) { // Step 19 - male voice speaking
+      if (isPlaying) {
+        speechSynthesis.cancel();
+        setIsPlaying(false);
+      } else {
+        const utterance = new SpeechSynthesisUtterance("Hello, this is a hearing test. Can you hear me speaking clearly?");
+        
+        // Set male voice
+        const voices = speechSynthesis.getVoices();
+        const maleVoice = voices.find(voice => 
+          voice.name.toLowerCase().includes('male') || 
+          voice.name.toLowerCase().includes('david') ||
+          voice.name.toLowerCase().includes('mark') ||
+          voice.gender === 'male'
+        ) || voices.find(voice => !voice.name.toLowerCase().includes('female'));
+        
+        if (maleVoice) {
+          utterance.voice = maleVoice;
+        }
+        
+        utterance.volume = volume / 100;
+        utterance.rate = 0.9;
+        utterance.pitch = 0.8;
+        
+        utterance.onstart = () => setIsPlaying(true);
+        utterance.onend = () => setIsPlaying(false);
+        utterance.onerror = () => setIsPlaying(false);
+        
+        speechRef.current = utterance;
+        speechSynthesis.speak(utterance);
+      }
+    }
+  };
+
+  useEffect(() => {
+    // Update volume of current speech if playing
+    if (isPlaying && speechRef.current) {
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance("Hello, this is a hearing test. Can you hear me speaking clearly?");
+      
+      const voices = speechSynthesis.getVoices();
+      const maleVoice = voices.find(voice => 
+        voice.name.toLowerCase().includes('male') || 
+        voice.name.toLowerCase().includes('david') ||
+        voice.name.toLowerCase().includes('mark') ||
+        voice.gender === 'male'
+      ) || voices.find(voice => !voice.name.toLowerCase().includes('female'));
+      
+      if (maleVoice) {
+        utterance.voice = maleVoice;
+      }
+      
+      utterance.volume = volume / 100;
+      utterance.rate = 0.9;
+      utterance.pitch = 0.8;
+      
+      utterance.onstart = () => setIsPlaying(true);
+      utterance.onend = () => setIsPlaying(false);
+      utterance.onerror = () => setIsPlaying(false);
+      
+      speechRef.current = utterance;
+      speechSynthesis.speak(utterance);
+    }
+  }, [volume, isPlaying]);
+
+  useEffect(() => {
+    return () => {
+      speechSynthesis.cancel();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -57,6 +131,18 @@ export const AudioTest = ({ testNumber, totalTests, instruction, onNext, stepNum
             <div className="text-4xl">🗣️</div>
           )}
         </div>
+        
+        {stepNumber === 19 && (
+          <div className="mb-8">
+            <Button
+              onClick={playTestAudio}
+              className="w-20 h-20 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all duration-200 mb-4"
+            >
+              {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
+            </Button>
+            <p className="text-sm text-gray-600">Click to play test audio</p>
+          </div>
+        )}
         
         <div className="mb-8">
           <div className="flex items-center justify-center space-x-4 mb-6">
