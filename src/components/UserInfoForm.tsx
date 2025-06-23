@@ -47,6 +47,9 @@ export const UserInfoForm = ({ onComplete, stepNumber }: UserInfoFormProps) => {
                 <SelectItem value="male">Male</SelectItem>
                 <SelectItem value="female">Female</SelectItem>
                 <SelectItem value="other">Other</SelectItem>
+                <SelectItem value="x">X</SelectItem>
+                <SelectItem value="y">Y</SelectItem>
+                <SelectItem value="z">Z</SelectItem>
               </SelectContent>
             </Select>
           </div>
