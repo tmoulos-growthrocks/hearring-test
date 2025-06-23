@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useGenders } from "@/hooks/useGenders";
 
 interface UserInfoFormProps {
   onComplete: (info: { gender: string; ageCategory: string }) => void;
@@ -11,6 +12,7 @@ interface UserInfoFormProps {
 export const UserInfoForm = ({ onComplete, stepNumber }: UserInfoFormProps) => {
   const [gender, setGender] = useState("");
   const [ageCategory, setAgeCategory] = useState("");
+  const { genders, loading, error } = useGenders();
 
   const handleSubmit = () => {
     if (gender && ageCategory) {
@@ -38,18 +40,20 @@ export const UserInfoForm = ({ onComplete, stepNumber }: UserInfoFormProps) => {
         <div className="space-y-8 mb-12">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <label className="text-lg md:text-xl font-semibold text-gray-800">Gender</label>
-            <Select value={gender} onValueChange={setGender}>
+            <Select value={gender} onValueChange={setGender} disabled={loading}>
               <SelectTrigger className="w-full md:w-64 h-12 border-2 border-gray-300 rounded-full">
-                <SelectValue placeholder="Prefer not to say" />
+                <SelectValue placeholder={loading ? "Loading..." : "Select gender"} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="female">Female</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-                <SelectItem value="x">X</SelectItem>
-                <SelectItem value="y">Y</SelectItem>
-                <SelectItem value="z">Z</SelectItem>
+                {error ? (
+                  <SelectItem value="error" disabled>Error loading genders</SelectItem>
+                ) : (
+                  genders.map((genderOption) => (
+                    <SelectItem key={genderOption.id} value={genderOption.name}>
+                      {genderOption.name.charAt(0).toUpperCase() + genderOption.name.slice(1)}
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -78,7 +82,7 @@ export const UserInfoForm = ({ onComplete, stepNumber }: UserInfoFormProps) => {
         
         <Button 
           onClick={handleSubmit}
-          disabled={!gender || !ageCategory}
+          disabled={!gender || !ageCategory || loading}
           className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-300 text-white px-12 py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none"
         >
           Next
