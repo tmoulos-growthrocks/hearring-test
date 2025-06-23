@@ -3,8 +3,6 @@ import { LandingPage } from "@/components/LandingPage";
 import { HowItWorks } from "@/components/HowItWorks";
 import { TestFlowManager } from "@/components/TestFlowManager";
 import { TopNavigation } from "@/components/TopNavigation";
-import { AppSidebar } from "@/components/AppSidebar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useHearingTestFlow, TestStep } from "@/hooks/useHearingTestFlow";
 
 const Index = () => {
@@ -94,51 +92,43 @@ const Index = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AppSidebar currentStep={currentStep} onNavigate={handleNavigate} />
-        
-        <div className="flex-1">
-          <TopNavigation currentStep={currentStep} onNavigate={handleNavigate} />
-          
-          <main className="p-4">
-            <SidebarTrigger className="mb-4" />
-            
-            {currentStep === "landing" && (
-              <LandingPage onStartTest={handleStartTest} />
-            )}
+    <div className="min-h-screen">
+      <TopNavigation currentStep={currentStep} onNavigate={handleNavigate} />
+      
+      <div className="pt-0">
+        {currentStep === "landing" && (
+          <LandingPage onStartTest={handleStartTest} />
+        )}
 
-            {currentStep === "howItWorks" && (
-              <HowItWorks onContinue={handleContinue} />
-            )}
+        {currentStep === "howItWorks" && (
+          <HowItWorks onContinue={handleContinue} />
+        )}
 
-            {currentStep !== "landing" && currentStep !== "howItWorks" && (
-              <TestFlowManager
-                currentStep={currentStep}
-                userInfo={userInfo}
-                answers={answers}
-                headphoneType={headphoneType}
-                connectionMethod={connectionMethod}
-                currentAudioTest={currentAudioTest}
-                testResults={testResults}
-                onUserInfoComplete={handleUserInfoComplete}
-                onQuestionnaireComplete={handleQuestionnaireComplete}
-                onQuietPlaceNext={handleQuietPlaceNext}
-                onHeadphoneSelection={handleHeadphoneSelection}
-                onConnectionMethod={handleConnectionMethod}
-                onVolumeSetupNext={handleVolumeSetupNext}
-                onAudioTestSetupNext={handleAudioTestSetupNext}
-                onReadyCheckNext={handleReadyCheckNext}
-                onHearingTestStartNext={handleHearingTestStartNext}
-                onAudioTestNext={handleAudioTestNext}
-                onApiKeySet={handleApiKeySet}
-                onRetakeTest={resetTest}
-              />
-            )}
-          </main>
-        </div>
+        {currentStep !== "landing" && currentStep !== "howItWorks" && (
+          <TestFlowManager
+            currentStep={currentStep}
+            userInfo={userInfo}
+            answers={answers}
+            headphoneType={headphoneType}
+            connectionMethod={connectionMethod}
+            currentAudioTest={currentAudioTest}
+            testResults={testResults}
+            onUserInfoComplete={handleUserInfoComplete}
+            onQuestionnaireComplete={handleQuestionnaireComplete}
+            onQuietPlaceNext={handleQuietPlaceNext}
+            onHeadphoneSelection={handleHeadphoneSelection}
+            onConnectionMethod={handleConnectionMethod}
+            onVolumeSetupNext={handleVolumeSetupNext}
+            onAudioTestSetupNext={handleAudioTestSetupNext}
+            onReadyCheckNext={handleReadyCheckNext}
+            onHearingTestStartNext={handleHearingTestStartNext}
+            onAudioTestNext={handleAudioTestNext}
+            onApiKeySet={handleApiKeySet}
+            onRetakeTest={resetTest}
+          />
+        )}
       </div>
-    </SidebarProvider>
+    </div>
   );
 };
 
