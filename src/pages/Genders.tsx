@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useGenders } from "@/hooks/useGenders";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +15,8 @@ const Genders = () => {
   const [editingName, setEditingName] = useState("");
   const [newGender, setNewGender] = useState("");
   const [isAdding, setIsAdding] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [genderToDelete, setGenderToDelete] = useState<{ id: number; name: string } | null>(null);
   const { toast } = useToast();
 
   const handleEdit = (id: number, name: string) => {
@@ -66,22 +68,25 @@ const Genders = () => {
     }
   };
 
-  const handleDelete = async (id: number, name: string) => {
-    if (!confirm(`Are you sure you want to delete "${name}"?`)) {
-      return;
-    }
+  const handleDeleteClick = (id: number, name: string) => {
+    setGenderToDelete({ id, name });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!genderToDelete) return;
 
     try {
       const { error } = await supabase
         .from('genders')
         .delete()
-        .eq('id', id);
+        .eq('id', genderToDelete.id);
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: "Gender deleted successfully",
+        description: `"${genderToDelete.name}" has been removed successfully`,
       });
       refetch();
     } catch (err) {
@@ -90,6 +95,9 @@ const Genders = () => {
         description: err instanceof Error ? err.message : 'Failed to delete gender',
         variant: "destructive",
       });
+    } finally {
+      setDeleteDialogOpen(false);
+      setGenderToDelete(null);
     }
   };
 
@@ -270,13 +278,36 @@ const Genders = () => {
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button
-                          onClick={() => handleDelete(gender.id, gender.name)}
-                          variant="destructive"
-                          size="sm"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              onClick={() => handleDeleteClick(gender.id, gender.name)}
+                              variant="destructive"
+                              size="sm"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you sure you want to delete this gender?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                You're about to remove "{genderToDelete?.name}" from the system. 
+                                This action cannot be undone, but don't worry - you can always add it back later if needed! 
+                                Just making sure this is what you intended to do. 😊
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={handleDeleteConfirm}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                Yes, delete it
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     )}
                   </TableCell>
@@ -292,6 +323,28 @@ const Genders = () => {
           )}
         </Card>
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete this gender?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You're about to remove "{genderToDelete?.name}" from the system. 
+              This action cannot be undone, but don't worry - you can always add it back later if needed! 
+              Just making sure this is what you intended to do. 😊
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Yes, delete it
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
