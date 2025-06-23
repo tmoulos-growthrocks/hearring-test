@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGenders } from "@/hooks/useGenders";
+import { AddGenderForm } from "@/components/AddGenderForm";
 
 interface UserInfoFormProps {
   onComplete: (info: { gender: string; ageCategory: string }) => void;
@@ -12,12 +13,18 @@ interface UserInfoFormProps {
 export const UserInfoForm = ({ onComplete, stepNumber }: UserInfoFormProps) => {
   const [gender, setGender] = useState("");
   const [ageCategory, setAgeCategory] = useState("");
-  const { genders, loading, error } = useGenders();
+  const [showAddGender, setShowAddGender] = useState(false);
+  const { genders, loading, error, refetch } = useGenders();
 
   const handleSubmit = () => {
     if (gender && ageCategory) {
       onComplete({ gender, ageCategory });
     }
+  };
+
+  const handleGenderAdded = () => {
+    refetch();
+    setShowAddGender(false);
   };
 
   return (
@@ -40,22 +47,36 @@ export const UserInfoForm = ({ onComplete, stepNumber }: UserInfoFormProps) => {
         <div className="space-y-8 mb-12">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <label className="text-lg md:text-xl font-semibold text-gray-800">Gender</label>
-            <Select value={gender} onValueChange={setGender} disabled={loading}>
-              <SelectTrigger className="w-full md:w-64 h-12 border-2 border-gray-300 rounded-full">
-                <SelectValue placeholder={loading ? "Loading..." : "Select gender"} />
-              </SelectTrigger>
-              <SelectContent>
-                {error ? (
-                  <SelectItem value="error" disabled>Error loading genders</SelectItem>
-                ) : (
-                  genders.map((genderOption) => (
-                    <SelectItem key={genderOption.id} value={genderOption.name}>
-                      {genderOption.name.charAt(0).toUpperCase() + genderOption.name.slice(1)}
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
+            <div className="w-full md:w-64">
+              {showAddGender && (
+                <AddGenderForm onGenderAdded={handleGenderAdded} />
+              )}
+              <Select value={gender} onValueChange={setGender} disabled={loading}>
+                <SelectTrigger className="w-full h-12 border-2 border-gray-300 rounded-full">
+                  <SelectValue placeholder={loading ? "Loading..." : "Select gender"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {error ? (
+                    <SelectItem value="error" disabled>Error loading genders</SelectItem>
+                  ) : (
+                    genders.map((genderOption) => (
+                      <SelectItem key={genderOption.id} value={genderOption.name}>
+                        {genderOption.name.charAt(0).toUpperCase() + genderOption.name.slice(1)}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAddGender(!showAddGender)}
+                className="mt-2 text-xs"
+              >
+                {showAddGender ? "Cancel" : "Add new gender"}
+              </Button>
+            </div>
           </div>
           
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
