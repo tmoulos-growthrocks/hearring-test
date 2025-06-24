@@ -12,20 +12,26 @@ const Index = () => {
     currentStep,
     setCurrentStep,
     userInfo,
-    setUserInfo,
     answers,
-    setAnswers,
     headphoneType,
-    setHeadphoneType,
     connectionMethod,
-    setConnectionMethod,
     currentAudioTest,
-    setCurrentAudioTest,
     testResults,
     userEmail,
-    setUserEmail,
     resetTest,
     completeAudioTest,
+    handleUserInfoComplete,
+    handleQuestionnaireComplete,
+    handleQuietPlaceNext,
+    handleHeadphoneSelection,
+    handleConnectionMethod,
+    handleVolumeSetupNext,
+    handleAudioTestSetupNext,
+    handleReadyCheckNext,
+    handleHearingTestStartNext,
+    handleAudioTestNext,
+    handleResultsContinue,
+    handleRetakeTest,
   } = useHearingTestFlow();
 
   const handleStartTest = () => {
@@ -36,60 +42,7 @@ const Index = () => {
     setCurrentStep("userInfo");
   };
 
-  const handleUserInfoComplete = (info: { gender: string; ageCategory: string }) => {
-    setUserInfo(info);
-    setCurrentStep("questionnaire");
-  };
-
-  const handleQuestionnaireComplete = (questionnaireAnswers: string[]) => {
-    setAnswers(questionnaireAnswers);
-    setCurrentStep("quietPlace");
-  };
-
-  const handleQuietPlaceNext = () => {
-    setCurrentStep("headphoneSelection");
-  };
-
-  const handleHeadphoneSelection = (type: string) => {
-    setHeadphoneType(type);
-    setCurrentStep("connectionMethod");
-  };
-
-  const handleConnectionMethod = (method: string) => {
-    setConnectionMethod(method);
-    setCurrentStep("volumeSetup");
-  };
-
-  const handleVolumeSetupNext = () => {
-    setCurrentStep("audioTestSetup");
-  };
-
-  const handleAudioTestSetupNext = () => {
-    setCurrentStep("readyCheck");
-  };
-
-  const handleReadyCheckNext = () => {
-    setCurrentStep("hearingTestStart");
-  };
-
-  const handleHearingTestStartNext = () => {
-    setCurrentStep("audioTest");
-  };
-
-  const handleAudioTestNext = () => {
-    if (currentAudioTest < 3) {
-      setCurrentAudioTest(currentAudioTest + 1);
-    } else {
-      completeAudioTest();
-    }
-  };
-
-  const handleResultsContinue = () => {
-    setCurrentStep("emailCollection");
-  };
-
   const handleEmailComplete = (email: string) => {
-    setUserEmail(email);
     setCurrentStep("comprehensiveResults");
   };
 
@@ -153,7 +106,7 @@ const Index = () => {
             onHearingTestStartNext={handleHearingTestStartNext}
             onAudioTestNext={handleAudioTestNext}
             onResultsContinue={handleResultsContinue}
-            onRetakeTest={resetTest}
+            onRetakeTest={handleRetakeTest}
           />
         )}
       </div>

@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export type TestStep = 
   | "landing"
+  | "howItWorks"
   | "userInfo" 
   | "questionnaire"
   | "quietPlace"
@@ -16,6 +17,7 @@ export type TestStep =
   | "hearingTestStart"
   | "audioTest"
   | "results"
+  | "emailCollection"
   | "comprehensiveResults";
 
 export const useHearingTestFlow = () => {
@@ -30,6 +32,7 @@ export const useHearingTestFlow = () => {
   const [testResults, setTestResults] = useState({ leftEar: 0, rightEar: 0 });
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
   
   // Capture user's first and last name from navigation state
   const [userFirstName, setUserFirstName] = useState<string>("");
@@ -80,16 +83,25 @@ export const useHearingTestFlow = () => {
   };
 
   const handleResultsContinue = () => {
-    setCurrentStep("comprehensiveResults");
+    setCurrentStep("emailCollection");
   };
 
-  const handleRetakeTest = () => {
+  const completeAudioTest = () => {
+    setCurrentStep("results");
+  };
+
+  const resetTest = () => {
     setCurrentStep("userInfo");
     setAnswers([]);
     setCurrentAudioTest(1);
     setTestResults({ leftEar: 0, rightEar: 0 });
     setEmail("");
     setConsent(false);
+    setUserEmail("");
+  };
+
+  const handleRetakeTest = () => {
+    resetTest();
   };
 
   const handleDetailedResultsSubmit = async (emailInput: string, consentInput: boolean, leftEarScore: number, rightEarScore: number) => {
@@ -166,9 +178,18 @@ export const useHearingTestFlow = () => {
     testResults,
     email,
     consent,
+    userEmail,
     userFirstName,
     userLastName,
     setCurrentStep,
+    setUserInfo,
+    setAnswers,
+    setHeadphoneType,
+    setConnectionMethod,
+    setCurrentAudioTest,
+    setUserEmail,
+    resetTest,
+    completeAudioTest,
     handleUserInfoComplete,
     handleQuestionnaireComplete,
     handleQuietPlaceNext,

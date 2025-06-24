@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { TestStep } from "@/hooks/useHearingTestFlow";
 
@@ -8,10 +9,10 @@ interface TopNavigationProps {
 
 const steps: { step: TestStep; label: string; number: number; enabled: boolean }[] = [
   { step: "landing", label: "Start", number: 1, enabled: true },
+  { step: "howItWorks", label: "How It Works", number: 2, enabled: true },
   { step: "userInfo", label: "User Info", number: 3, enabled: true },
   { step: "quietPlace", label: "Quiet Place", number: 11, enabled: true },
   { step: "hearingTestStart", label: "Test Start", number: 17, enabled: true },
-  { step: "howItWorks", label: "How It Works", number: 2, enabled: false },
   { step: "questionnaire", label: "Questions", number: 4, enabled: false },
   { step: "headphoneSelection", label: "Headphones", number: 12, enabled: false },
   { step: "connectionMethod", label: "Connection", number: 13, enabled: false },
@@ -19,7 +20,8 @@ const steps: { step: TestStep; label: string; number: number; enabled: boolean }
   { step: "audioTestSetup", label: "Test Setup", number: 15, enabled: false },
   { step: "readyCheck", label: "Ready", number: 16, enabled: false },
   { step: "audioTest", label: "Audio Test", number: 18, enabled: false },
-  { step: "results", label: "Results", number: 19, enabled: false }
+  { step: "results", label: "Results", number: 19, enabled: false },
+  { step: "emailCollection", label: "Email", number: 20, enabled: false }
 ];
 
 export const TopNavigation = ({ currentStep, onNavigate }: TopNavigationProps) => {
