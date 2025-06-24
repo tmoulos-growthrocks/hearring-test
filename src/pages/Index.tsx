@@ -111,7 +111,12 @@ const Index = () => {
         )}
 
         {currentStep === "emailCollection" && (
-          <EmailCollection onComplete={handleEmailComplete} />
+          <EmailCollection 
+            onComplete={handleEmailComplete}
+            userInfo={userInfo}
+            answers={answers}
+            testResults={testResults}
+          />
         )}
 
         {currentStep === "comprehensiveResults" && (

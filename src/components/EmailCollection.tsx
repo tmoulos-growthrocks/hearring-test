@@ -8,9 +8,12 @@ import { useToast } from "@/hooks/use-toast";
 
 interface EmailCollectionProps {
   onComplete: (email: string) => void;
+  userInfo: { gender: string; ageCategory: string };
+  answers: string[];
+  testResults: { leftEar: number; rightEar: number };
 }
 
-export const EmailCollection = ({ onComplete }: EmailCollectionProps) => {
+export const EmailCollection = ({ onComplete, userInfo, answers, testResults }: EmailCollectionProps) => {
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [emailError, setEmailError] = useState("");
@@ -42,7 +45,7 @@ export const EmailCollection = ({ onComplete }: EmailCollectionProps) => {
     setIsLoading(true);
 
     try {
-      // Send data to Zapier webhook
+      // Send data to Zapier webhook with detailed results
       const response = await fetch("https://hooks.zapier.com/hooks/catch/447525/ubyp1bq/", {
         method: "POST",
         headers: {
@@ -53,11 +56,27 @@ export const EmailCollection = ({ onComplete }: EmailCollectionProps) => {
           email: email,
           consent: consent,
           timestamp: new Date().toISOString(),
-          source: "hearing_test_app"
+          source: "hearing_test_app",
+          userInfo: {
+            gender: userInfo.gender,
+            ageCategory: userInfo.ageCategory
+          },
+          questionnaireAnswers: answers,
+          testResults: {
+            leftEarScore: testResults.leftEar,
+            rightEarScore: testResults.rightEar,
+            averageScore: (testResults.leftEar + testResults.rightEar) / 2
+          }
         }),
       });
 
-      console.log("Webhook triggered with email:", email, "consent:", consent);
+      console.log("Webhook triggered with detailed results:", {
+        email,
+        consent,
+        userInfo,
+        answers,
+        testResults
+      });
       
       toast({
         title: "Success!",
