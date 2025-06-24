@@ -18,8 +18,8 @@ const Index = () => {
     currentAudioTest,
     testResults,
     userEmail,
-    resetTest,
-    completeAudioTest,
+    userFirstName,
+    userLastName,
     handleUserInfoComplete,
     handleQuestionnaireComplete,
     handleQuietPlaceNext,
@@ -69,6 +69,8 @@ const Index = () => {
             userInfo={userInfo}
             answers={answers}
             testResults={testResults}
+            userFirstName={userFirstName}
+            userLastName={userLastName}
           />
         )}
 
@@ -79,7 +81,7 @@ const Index = () => {
             leftEarScore={testResults.leftEar}
             rightEarScore={testResults.rightEar}
             userEmail={userEmail}
-            onRetakeTest={resetTest}
+            onRetakeTest={handleRetakeTest}
           />
         )}
 

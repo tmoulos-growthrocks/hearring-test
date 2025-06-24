@@ -11,9 +11,18 @@ interface EmailCollectionProps {
   userInfo: { gender: string; ageCategory: string };
   answers: string[];
   testResults: { leftEar: number; rightEar: number };
+  userFirstName?: string;
+  userLastName?: string;
 }
 
-export const EmailCollection = ({ onComplete, userInfo, answers, testResults }: EmailCollectionProps) => {
+export const EmailCollection = ({ 
+  onComplete, 
+  userInfo, 
+  answers, 
+  testResults,
+  userFirstName,
+  userLastName 
+}: EmailCollectionProps) => {
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [emailError, setEmailError] = useState("");
@@ -45,38 +54,39 @@ export const EmailCollection = ({ onComplete, userInfo, answers, testResults }: 
     setIsLoading(true);
 
     try {
-      // Send data to Zapier webhook with detailed results
+      const averageScore = Math.round((testResults.leftEar + testResults.rightEar) / 2);
+
+      // Send data to Zapier webhook with detailed results including captured names
+      const payload = {
+        email: email,
+        consent: consent,
+        timestamp: new Date().toISOString(),
+        source: "hearing_test_app",
+        userInfo: {
+          gender: userInfo.gender,
+          ageCategory: userInfo.ageCategory
+        },
+        questionnaireAnswers: answers,
+        testResults: {
+          leftEarScore: testResults.leftEar,
+          rightEarScore: testResults.rightEar,
+          averageScore: averageScore
+        },
+        // Include the captured first and last name in the webhook payload
+        firstName: userFirstName,
+        lastName: userLastName
+      };
+
       const response = await fetch("https://hooks.zapier.com/hooks/catch/447525/ubyp1bq/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         mode: "no-cors",
-        body: JSON.stringify({
-          email: email,
-          consent: consent,
-          timestamp: new Date().toISOString(),
-          source: "hearing_test_app",
-          userInfo: {
-            gender: userInfo.gender,
-            ageCategory: userInfo.ageCategory
-          },
-          questionnaireAnswers: answers,
-          testResults: {
-            leftEarScore: testResults.leftEar,
-            rightEarScore: testResults.rightEar,
-            averageScore: (testResults.leftEar + testResults.rightEar) / 2
-          }
-        }),
+        body: JSON.stringify(payload),
       });
 
-      console.log("Webhook triggered with detailed results:", {
-        email,
-        consent,
-        userInfo,
-        answers,
-        testResults
-      });
+      console.log("Webhook triggered with detailed results including names:", payload);
       
       toast({
         title: "Success!",
