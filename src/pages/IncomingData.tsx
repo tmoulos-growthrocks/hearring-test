@@ -30,6 +30,7 @@ const IncomingData = () => {
 
   const updateStatusMutation = useMutation({
     mutationFn: async (recordId: string) => {
+      console.log('Updating status for record:', recordId);
       const { data, error } = await supabase
         .from('incoming_data')
         .update({ status: 'started' })
@@ -37,32 +38,45 @@ const IncomingData = () => {
         .select();
       
       if (error) {
+        console.error('Error updating status:', error);
         throw new Error(error.message);
       }
       
+      console.log('Status updated successfully:', data);
       return data;
     },
     onSuccess: () => {
+      console.log('Mutation successful, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ['incoming_data'] });
+      toast({
+        title: "Success",
+        description: "Hearing test status updated",
+      });
+    },
+    onError: (error) => {
+      console.error('Mutation failed:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update hearing test status",
+        variant: "destructive",
+      });
     },
   });
 
   const handleStartHearingTest = async (record: any) => {
     console.log('Starting hearing test for:', record);
     
+    if (record.status === 'started') {
+      console.log('Test already started, navigating to home');
+      navigate('/');
+      return;
+    }
+    
     try {
       await updateStatusMutation.mutateAsync(record.id);
-      toast({
-        title: "Hearing Test Started",
-        description: `Test initiated for ${record.first_name} ${record.last_name}`,
-      });
       navigate('/');
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to start hearing test",
-        variant: "destructive",
-      });
+      console.error('Failed to start hearing test:', error);
     }
   };
 
@@ -80,14 +94,14 @@ const IncomingData = () => {
 
   const getButtonVariant = (status: string) => {
     if (status === 'started') {
-      return 'bg-green-600 hover:bg-green-700';
+      return 'bg-green-600 hover:bg-green-700 text-white';
     }
-    return 'bg-blue-600 hover:bg-blue-700';
+    return 'bg-blue-600 hover:bg-blue-700 text-white';
   };
 
   const getButtonText = (status: string) => {
     if (status === 'started') {
-      return 'Test Started';
+      return 'Continue Test';
     }
     return 'Start Hearing Test';
   };
@@ -164,7 +178,7 @@ const IncomingData = () => {
                           className={getButtonVariant(record.status || 'pending')}
                           disabled={updateStatusMutation.isPending}
                         >
-                          {getButtonText(record.status || 'pending')}
+                          {updateStatusMutation.isPending ? 'Updating...' : getButtonText(record.status || 'pending')}
                         </Button>
                       </TableCell>
                     </TableRow>
