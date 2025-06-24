@@ -14,8 +14,8 @@ const NotFound = () => {
         keywords="page not found, 404 error, hearing test app"
         ogTitle="Page Not Found - Hearing Test App"
         ogDescription="The requested page could not be found on the hearing test application"
-        ogUrl="https://your-domain.com/404"
-        canonical="https://your-domain.com/404"
+        ogUrl={window.location.href}
+        canonical={window.location.href}
       />
       
       <div className="text-center">

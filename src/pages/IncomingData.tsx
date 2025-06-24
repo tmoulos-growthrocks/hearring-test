@@ -1,8 +1,15 @@
 
 import { IncomingDataTable } from "@/components/IncomingDataTable";
 import { MetaData } from "@/components/MetaData";
+import { useIncomingData } from "@/hooks/useIncomingData";
 
 const IncomingData = () => {
+  const { data, isLoading, error } = useIncomingData();
+
+  const handleStartHearingTest = (id: string) => {
+    console.log("Starting hearing test for:", id);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <MetaData
@@ -11,13 +18,17 @@ const IncomingData = () => {
         keywords="data dashboard, hearing test data, admin dashboard, test results, data management"
         ogTitle="Data Dashboard - Hearing Test App"
         ogDescription="Administrative dashboard for viewing and managing hearing test data and submissions"
-        ogUrl="https://your-domain.com/incoming-data"
-        canonical="https://your-domain.com/incoming-data"
+        ogUrl={window.location.href}
+        canonical={window.location.href}
       />
       
       <div className="container mx-auto py-8">
         <h1 className="text-3xl font-bold text-center mb-8">Incoming Data Dashboard</h1>
-        <IncomingDataTable />
+        <IncomingDataTable 
+          data={data || []} 
+          onStartHearingTest={handleStartHearingTest}
+          isUpdating={isLoading}
+        />
       </div>
     </div>
   );

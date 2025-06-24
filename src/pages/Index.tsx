@@ -61,36 +61,36 @@ const Index = () => {
         return {
           title: "Hearing Test App - Professional Online Hearing Assessment",
           description: "Take a comprehensive online hearing test from the comfort of your home. Professional-grade hearing assessment with detailed results and recommendations.",
-          ogUrl: "https://your-domain.com/",
-          canonical: "https://your-domain.com/"
+          ogUrl: window.location.href,
+          canonical: window.location.href
         };
       case "howItWorks":
         return {
           title: "How It Works - Hearing Test App",
           description: "Learn how our professional online hearing test works. Step-by-step guide to getting accurate hearing assessment results.",
-          ogUrl: "https://your-domain.com/how-it-works",
-          canonical: "https://your-domain.com/how-it-works"
+          ogUrl: window.location.href,
+          canonical: window.location.href
         };
       case "userInfo":
         return {
           title: "User Information - Hearing Test App",
           description: "Provide your information to personalize your hearing test experience and get more accurate results.",
-          ogUrl: "https://your-domain.com/user-info",
-          canonical: "https://your-domain.com/user-info"
+          ogUrl: window.location.href,
+          canonical: window.location.href
         };
       case "comprehensiveResults":
         return {
           title: "Your Hearing Test Results - Hearing Test App",
           description: "View your comprehensive hearing test results with detailed analysis and professional recommendations.",
-          ogUrl: "https://your-domain.com/results",
-          canonical: "https://your-domain.com/results"
+          ogUrl: window.location.href,
+          canonical: window.location.href
         };
       default:
         return {
           title: "Hearing Test in Progress - Hearing Test App",
           description: "Complete your professional hearing assessment to get personalized results and recommendations.",
-          ogUrl: "https://your-domain.com/test",
-          canonical: "https://your-domain.com/test"
+          ogUrl: window.location.href,
+          canonical: window.location.href
         };
     }
   };
