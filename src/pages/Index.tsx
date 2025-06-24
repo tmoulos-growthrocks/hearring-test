@@ -1,10 +1,10 @@
-
 import { LandingPage } from "@/components/LandingPage";
 import { HowItWorks } from "@/components/HowItWorks";
 import { TestFlowManager } from "@/components/TestFlowManager";
 import { TopNavigation } from "@/components/TopNavigation";
 import { EmailCollection } from "@/components/EmailCollection";
 import { ComprehensiveResults } from "@/components/ComprehensiveResults";
+import { DebugInfo } from "@/components/DebugInfo";
 import { useHearingTestFlow, TestStep } from "@/hooks/useHearingTestFlow";
 
 const Index = () => {
@@ -112,6 +112,20 @@ const Index = () => {
           />
         )}
       </div>
+
+      {/* Debug Info Component - Always visible */}
+      <DebugInfo
+        currentStep={currentStep}
+        userInfo={userInfo}
+        answers={answers}
+        headphoneType={headphoneType}
+        connectionMethod={connectionMethod}
+        currentAudioTest={currentAudioTest}
+        testResults={testResults}
+        userEmail={userEmail}
+        userFirstName={userFirstName}
+        userLastName={userLastName}
+      />
     </div>
   );
 };
