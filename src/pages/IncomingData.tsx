@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -52,27 +51,41 @@ const IncomingData = () => {
       
       console.log('Found existing record:', existingRecord[0]);
       
-      // Now attempt the update
-      const { data, error } = await supabase
+      // Check if the record already has the desired status
+      if (existingRecord[0].status === 'started') {
+        console.log('Record already has status "started", returning existing record');
+        return existingRecord[0];
+      }
+      
+      // Now attempt the update with a more explicit approach
+      const { error: updateError } = await supabase
         .from('incoming_data')
         .update({ status: 'started' })
+        .eq('id', recordId);
+      
+      console.log('Update error:', updateError);
+      
+      if (updateError) {
+        console.error('Error updating status:', updateError);
+        throw new Error(`Database error: ${updateError.message}`);
+      }
+      
+      // Fetch the updated record separately to ensure we get the latest data
+      const { data: updatedRecord, error: refetchError } = await supabase
+        .from('incoming_data')
+        .select('*')
         .eq('id', recordId)
-        .select();
+        .single();
       
-      console.log('Update query result:', { data, error });
+      console.log('Refetch result:', { updatedRecord, refetchError });
       
-      if (error) {
-        console.error('Error updating status:', error);
-        throw new Error(`Database error: ${error.message}`);
+      if (refetchError) {
+        console.error('Error refetching updated record:', refetchError);
+        throw new Error(`Error refetching record: ${refetchError.message}`);
       }
       
-      if (!data || data.length === 0) {
-        console.error('Update succeeded but no data returned');
-        throw new Error('Update query succeeded but no records were returned');
-      }
-      
-      console.log('Status updated successfully:', data[0]);
-      return data[0];
+      console.log('Status updated successfully:', updatedRecord);
+      return updatedRecord;
     },
     onSuccess: (updatedRecord) => {
       console.log('Mutation successful, invalidating queries');
