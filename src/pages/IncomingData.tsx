@@ -35,7 +35,8 @@ const IncomingData = () => {
         .from('incoming_data')
         .update({ status: 'started' })
         .eq('id', recordId)
-        .select();
+        .select()
+        .single();
       
       if (error) {
         console.error('Error updating status:', error);
@@ -45,8 +46,15 @@ const IncomingData = () => {
       console.log('Status updated successfully:', data);
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (updatedRecord) => {
       console.log('Mutation successful, invalidating queries');
+      // Update the cache immediately with the new data
+      queryClient.setQueryData(['incoming_data'], (oldData: any[]) => {
+        if (!oldData) return oldData;
+        return oldData.map(record => 
+          record.id === updatedRecord.id ? updatedRecord : record
+        );
+      });
       queryClient.invalidateQueries({ queryKey: ['incoming_data'] });
       toast({
         title: "Success",
