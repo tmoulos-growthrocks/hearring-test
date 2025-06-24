@@ -31,6 +31,22 @@ const IncomingData = () => {
   const updateStatusMutation = useMutation({
     mutationFn: async (recordId: string) => {
       console.log('Updating status for record:', recordId);
+      
+      // First, let's verify the record exists
+      const { data: existingRecord, error: fetchError } = await supabase
+        .from('incoming_data')
+        .select('*')
+        .eq('id', recordId)
+        .single();
+      
+      if (fetchError) {
+        console.error('Error fetching record:', fetchError);
+        throw new Error(`Record not found: ${fetchError.message}`);
+      }
+      
+      console.log('Found existing record:', existingRecord);
+      
+      // Now update the record
       const { data, error } = await supabase
         .from('incoming_data')
         .update({ status: 'started' })
@@ -65,7 +81,7 @@ const IncomingData = () => {
       console.error('Mutation failed:', error);
       toast({
         title: "Error",
-        description: "Failed to update hearing test status",
+        description: `Failed to update hearing test status: ${error.message}`,
         variant: "destructive",
       });
     },
