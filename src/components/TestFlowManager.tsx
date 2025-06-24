@@ -9,9 +9,7 @@ import { AudioTestSetup } from "@/components/AudioTestSetup";
 import { ReadyCheck } from "@/components/ReadyCheck";
 import { HearingTestStart } from "@/components/HearingTestStart";
 import { AudioTest } from "@/components/AudioTest";
-import { HearingTestResults } from "@/components/HearingTestResults";
-import { AIHearingResults } from "@/components/AIHearingResults";
-import { ApiKeyInput } from "@/components/ApiKeyInput";
+import { ResultsPage } from "@/components/ResultsPage";
 import { useHearingTestFlow, TestStep } from "@/hooks/useHearingTestFlow";
 
 interface TestFlowManagerProps {
@@ -32,7 +30,7 @@ interface TestFlowManagerProps {
   onReadyCheckNext: () => void;
   onHearingTestStartNext: () => void;
   onAudioTestNext: () => void;
-  onApiKeySet: (key: string) => void;
+  onResultsContinue: () => void;
   onRetakeTest: () => void;
 }
 
@@ -66,7 +64,7 @@ export const TestFlowManager = ({
   onReadyCheckNext,
   onHearingTestStartNext,
   onAudioTestNext,
-  onApiKeySet,
+  onResultsContinue,
   onRetakeTest,
 }: TestFlowManagerProps) => {
   switch (currentStep) {
@@ -110,24 +108,10 @@ export const TestFlowManager = ({
     
     case "results":
       return (
-        <HearingTestResults
-          leftEarScore={testResults.leftEar}
-          rightEarScore={testResults.rightEar}
-          onRetakeTest={onRetakeTest}
-        />
-      );
-    
-    case "apiKeyInput":
-      return <ApiKeyInput onApiKeySet={onApiKeySet} />;
-    
-    case "aiResults":
-      return (
-        <AIHearingResults
+        <ResultsPage
           userInfo={userInfo}
           answers={answers}
-          leftEarScore={testResults.leftEar}
-          rightEarScore={testResults.rightEar}
-          onRetakeTest={onRetakeTest}
+          onContinue={onResultsContinue}
         />
       );
     

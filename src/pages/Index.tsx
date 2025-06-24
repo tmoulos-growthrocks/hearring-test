@@ -3,6 +3,8 @@ import { LandingPage } from "@/components/LandingPage";
 import { HowItWorks } from "@/components/HowItWorks";
 import { TestFlowManager } from "@/components/TestFlowManager";
 import { TopNavigation } from "@/components/TopNavigation";
+import { EmailCollection } from "@/components/EmailCollection";
+import { ComprehensiveResults } from "@/components/ComprehensiveResults";
 import { useHearingTestFlow, TestStep } from "@/hooks/useHearingTestFlow";
 
 const Index = () => {
@@ -20,8 +22,8 @@ const Index = () => {
     currentAudioTest,
     setCurrentAudioTest,
     testResults,
-    apiKey,
-    setApiKey,
+    userEmail,
+    setUserEmail,
     resetTest,
     completeAudioTest,
   } = useHearingTestFlow();
@@ -82,9 +84,13 @@ const Index = () => {
     }
   };
 
-  const handleApiKeySet = (key: string) => {
-    setApiKey(key);
-    setCurrentStep("aiResults");
+  const handleResultsContinue = () => {
+    setCurrentStep("emailCollection");
+  };
+
+  const handleEmailComplete = (email: string) => {
+    setUserEmail(email);
+    setCurrentStep("comprehensiveResults");
   };
 
   const handleNavigate = (step: TestStep) => {
@@ -104,7 +110,25 @@ const Index = () => {
           <HowItWorks onContinue={handleContinue} />
         )}
 
-        {currentStep !== "landing" && currentStep !== "howItWorks" && (
+        {currentStep === "emailCollection" && (
+          <EmailCollection onComplete={handleEmailComplete} />
+        )}
+
+        {currentStep === "comprehensiveResults" && (
+          <ComprehensiveResults
+            userInfo={userInfo}
+            answers={answers}
+            leftEarScore={testResults.leftEar}
+            rightEarScore={testResults.rightEar}
+            userEmail={userEmail}
+            onRetakeTest={resetTest}
+          />
+        )}
+
+        {currentStep !== "landing" && 
+         currentStep !== "howItWorks" && 
+         currentStep !== "emailCollection" && 
+         currentStep !== "comprehensiveResults" && (
           <TestFlowManager
             currentStep={currentStep}
             userInfo={userInfo}
@@ -123,7 +147,7 @@ const Index = () => {
             onReadyCheckNext={handleReadyCheckNext}
             onHearingTestStartNext={handleHearingTestStartNext}
             onAudioTestNext={handleAudioTestNext}
-            onApiKeySet={handleApiKeySet}
+            onResultsContinue={handleResultsContinue}
             onRetakeTest={resetTest}
           />
         )}

@@ -1,13 +1,14 @@
 
 import { Button } from "@/components/ui/button";
-import { CheckCircle, AlertTriangle, Users, Calendar } from "lucide-react";
+import { CheckCircle, AlertTriangle, Users, Calendar, ArrowRight } from "lucide-react";
 
 interface ResultsPageProps {
   userInfo: { gender: string; ageCategory: string };
   answers: string[];
+  onContinue: () => void;
 }
 
-export const ResultsPage = ({ userInfo, answers }: ResultsPageProps) => {
+export const ResultsPage = ({ userInfo, answers, onContinue }: ResultsPageProps) => {
   // Simple scoring logic based on answers
   const calculateScore = () => {
     let score = 0;
@@ -21,10 +22,6 @@ export const ResultsPage = ({ userInfo, answers }: ResultsPageProps) => {
 
   const score = calculateScore();
   const isLowRisk = score <= 2;
-
-  const handleRetakeTest = () => {
-    window.location.reload();
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -78,10 +75,11 @@ export const ResultsPage = ({ userInfo, answers }: ResultsPageProps) => {
         </p>
         
         <Button 
-          onClick={handleRetakeTest}
-          className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
+          onClick={onContinue}
+          className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 mr-4"
         >
-          Take Test Again
+          Continue to Detailed Results
+          <ArrowRight className="w-5 h-5 ml-2" />
         </Button>
       </div>
     </div>

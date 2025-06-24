@@ -15,8 +15,7 @@ export type TestStep =
   | "hearingTestStart" 
   | "audioTest" 
   | "results" 
-  | "apiKeyInput" 
-  | "aiResults";
+  | "emailCollection";
 
 export const useHearingTestFlow = () => {
   const [currentStep, setCurrentStep] = useState<TestStep>("landing");
@@ -26,7 +25,7 @@ export const useHearingTestFlow = () => {
   const [connectionMethod, setConnectionMethod] = useState("");
   const [currentAudioTest, setCurrentAudioTest] = useState(1);
   const [testResults, setTestResults] = useState({ leftEar: 0, rightEar: 0 });
-  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState("");
 
   const resetTest = () => {
     setCurrentStep("landing");
@@ -36,21 +35,14 @@ export const useHearingTestFlow = () => {
     setAnswers([]);
     setHeadphoneType("");
     setConnectionMethod("");
-    setApiKey(null);
+    setUserEmail("");
   };
 
   const completeAudioTest = () => {
     const leftEarScore = Math.floor(Math.random() * 21);
     const rightEarScore = Math.floor(Math.random() * 21);
     setTestResults({ leftEar: leftEarScore, rightEar: rightEarScore });
-    
-    const storedApiKey = localStorage.getItem('openai_api_key');
-    if (storedApiKey) {
-      setApiKey(storedApiKey);
-      setCurrentStep("aiResults");
-    } else {
-      setCurrentStep("apiKeyInput");
-    }
+    setCurrentStep("results");
   };
 
   return {
@@ -68,8 +60,8 @@ export const useHearingTestFlow = () => {
     setCurrentAudioTest,
     testResults,
     setTestResults,
-    apiKey,
-    setApiKey,
+    userEmail,
+    setUserEmail,
     resetTest,
     completeAudioTest,
   };
