@@ -1,5 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,6 +12,8 @@ interface WebhookPayload {
   consent?: boolean;
   timestamp?: string;
   source?: string;
+  firstName?: string;
+  lastName?: string;
   userInfo?: {
     gender: string;
     ageCategory: string;
@@ -38,6 +41,39 @@ const handler = async (req: Request): Promise<Response> => {
       timestamp: new Date().toISOString(),
       payload: payload
     });
+
+    // Initialize Supabase client
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    // Save form data to database if it's from the testing form
+    if (payload.firstName && payload.lastName && payload.source === 'testing_form') {
+      console.log('Saving testing form data to database:', {
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        source: payload.source,
+        timestamp: payload.timestamp
+      });
+
+      const { data, error } = await supabase
+        .from('incoming_data')
+        .insert({
+          first_name: payload.firstName,
+          last_name: payload.lastName,
+          timestamp: payload.timestamp,
+          source: payload.source
+        })
+        .select();
+
+      if (error) {
+        console.error('Error saving to database:', error);
+        throw new Error(`Database error: ${error.message}`);
+      }
+
+      console.log('Data saved successfully:', data);
+    }
 
     // Process the webhook data here
     if (payload.email && payload.source === 'hearing_test_app') {

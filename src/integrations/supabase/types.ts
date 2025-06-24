@@ -27,6 +27,33 @@ export type Database = {
         }
         Relationships: []
       }
+      incoming_data: {
+        Row: {
+          created_at: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          source: string | null
+          timestamp: string | null
+        }
+        Insert: {
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          source?: string | null
+          timestamp?: string | null
+        }
+        Update: {
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          source?: string | null
+          timestamp?: string | null
+        }
+        Relationships: []
+      }
       linkedin_activity_logs: {
         Row: {
           action: string
