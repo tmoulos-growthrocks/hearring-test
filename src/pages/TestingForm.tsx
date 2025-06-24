@@ -29,6 +29,8 @@ const TestingForm = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3eWZucXJ0ZGJneXVqa3VzdGJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxMTM2NTMsImV4cCI6MjA2MzY4OTY1M30.cQVEX7aMmTIsSh-4xutX2pEf6MNoW8BWGJbPTmc5d2I`,
+          "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3eWZucXJ0ZGJneXVqa3VzdGJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxMTM2NTMsImV4cCI6MjA2MzY4OTY1M30.cQVEX7aMmTIsSh-4xutX2pEf6MNoW8BWGJbPTmc5d2I"
         },
         body: JSON.stringify({
           firstName: firstName,
