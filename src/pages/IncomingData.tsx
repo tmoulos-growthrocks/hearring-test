@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useIncomingData } from "@/hooks/useIncomingData";
@@ -12,14 +11,26 @@ const IncomingData = () => {
     console.log('Starting hearing test for:', record);
     
     if (record.status === 'started') {
-      console.log('Test already started, navigating to home');
-      navigate('/');
+      console.log('Test already started, navigating to home with user data');
+      // Pass the user's name data when navigating
+      navigate('/', { 
+        state: { 
+          userFirstName: record.first_name,
+          userLastName: record.last_name 
+        }
+      });
       return;
     }
     
     try {
       await updateStatusMutation.mutateAsync(record.id);
-      navigate('/');
+      // Pass the user's name data when navigating after successful update
+      navigate('/', { 
+        state: { 
+          userFirstName: record.first_name,
+          userLastName: record.last_name 
+        }
+      });
     } catch (error) {
       console.error('Failed to start hearing test:', error);
     }
