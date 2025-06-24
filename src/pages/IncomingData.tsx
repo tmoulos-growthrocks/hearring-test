@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -32,35 +31,24 @@ const IncomingData = () => {
     mutationFn: async (recordId: string) => {
       console.log('Updating status for record:', recordId);
       
-      // First, let's verify the record exists
-      const { data: existingRecord, error: fetchError } = await supabase
-        .from('incoming_data')
-        .select('*')
-        .eq('id', recordId)
-        .single();
-      
-      if (fetchError) {
-        console.error('Error fetching record:', fetchError);
-        throw new Error(`Record not found: ${fetchError.message}`);
-      }
-      
-      console.log('Found existing record:', existingRecord);
-      
-      // Now update the record
+      // Update the record without using .single() to avoid the error
       const { data, error } = await supabase
         .from('incoming_data')
         .update({ status: 'started' })
         .eq('id', recordId)
-        .select()
-        .single();
+        .select();
       
       if (error) {
         console.error('Error updating status:', error);
         throw new Error(error.message);
       }
       
-      console.log('Status updated successfully:', data);
-      return data;
+      if (!data || data.length === 0) {
+        throw new Error('No record was updated. Record may not exist.');
+      }
+      
+      console.log('Status updated successfully:', data[0]);
+      return data[0]; // Return the first (and should be only) updated record
     },
     onSuccess: (updatedRecord) => {
       console.log('Mutation successful, invalidating queries');
