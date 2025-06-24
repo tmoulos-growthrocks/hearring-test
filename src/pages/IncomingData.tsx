@@ -1,72 +1,23 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
-import { useIncomingData } from "@/hooks/useIncomingData";
+
 import { IncomingDataTable } from "@/components/IncomingDataTable";
+import { MetaData } from "@/components/MetaData";
 
 const IncomingData = () => {
-  const navigate = useNavigate();
-  const { incomingData, isLoading, error, updateStatusMutation } = useIncomingData();
-
-  const handleStartHearingTest = async (record: any) => {
-    console.log('Starting hearing test for:', record);
-    
-    if (record.status === 'started') {
-      console.log('Test already started, navigating to home with user data');
-      // Pass the user's name data when navigating
-      navigate('/', { 
-        state: { 
-          userFirstName: record.first_name,
-          userLastName: record.last_name 
-        }
-      });
-      return;
-    }
-    
-    try {
-      await updateStatusMutation.mutateAsync(record.id);
-      // Pass the user's name data when navigating after successful update
-      navigate('/', { 
-        state: { 
-          userFirstName: record.first_name,
-          userLastName: record.last_name 
-        }
-      });
-    } catch (error) {
-      console.error('Failed to start hearing test:', error);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-lg">Loading incoming data...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-red-600">Error loading data: {error.message}</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold">Incoming Data Records</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <IncomingDataTable 
-              data={incomingData || []}
-              onStartHearingTest={handleStartHearingTest}
-              isUpdating={updateStatusMutation.isPending}
-            />
-          </CardContent>
-        </Card>
+    <div className="min-h-screen bg-gray-50">
+      <MetaData
+        title="Data Dashboard - Hearing Test App"
+        description="View and manage incoming hearing test data. Administrative dashboard for monitoring test submissions and results."
+        keywords="data dashboard, hearing test data, admin dashboard, test results, data management"
+        ogTitle="Data Dashboard - Hearing Test App"
+        ogDescription="Administrative dashboard for viewing and managing hearing test data and submissions"
+        ogUrl="https://your-domain.com/incoming-data"
+        canonical="https://your-domain.com/incoming-data"
+      />
+      
+      <div className="container mx-auto py-8">
+        <h1 className="text-3xl font-bold text-center mb-8">Incoming Data Dashboard</h1>
+        <IncomingDataTable />
       </div>
     </div>
   );
