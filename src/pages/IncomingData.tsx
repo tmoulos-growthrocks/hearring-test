@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,8 @@ const IncomingData = () => {
 
   const updateStatusMutation = useMutation({
     mutationFn: async (recordId: string) => {
-      console.log('Updating status for record:', recordId);
+      console.log('=== Starting status update process ===');
+      console.log('Record ID:', recordId);
       
       // First, let's verify the record exists and log its current state
       const { data: existingRecord, error: fetchError } = await supabase
@@ -37,7 +39,7 @@ const IncomingData = () => {
         .select('*')
         .eq('id', recordId);
       
-      console.log('Existing record query result:', { existingRecord, fetchError });
+      console.log('Step 1 - Initial fetch result:', { existingRecord, fetchError });
       
       if (fetchError) {
         console.error('Error fetching record:', fetchError);
@@ -49,7 +51,8 @@ const IncomingData = () => {
         throw new Error(`No record found with ID: ${recordId}`);
       }
       
-      console.log('Found existing record:', existingRecord[0]);
+      console.log('Step 2 - Found existing record:', existingRecord[0]);
+      console.log('Current status before update:', existingRecord[0].status);
       
       // Check if the record already has the desired status
       if (existingRecord[0].status === 'started') {
@@ -57,34 +60,54 @@ const IncomingData = () => {
         return existingRecord[0];
       }
       
-      // Now attempt the update with a more explicit approach
-      const { error: updateError } = await supabase
+      // Try the update with more detailed logging
+      console.log('Step 3 - Attempting update...');
+      const updateResult = await supabase
         .from('incoming_data')
         .update({ status: 'started' })
         .eq('id', recordId);
       
-      console.log('Update error:', updateError);
+      console.log('Step 4 - Update result:', updateResult);
+      console.log('Update error details:', updateResult.error);
+      console.log('Update data:', updateResult.data);
+      console.log('Update status:', updateResult.status);
+      console.log('Update statusText:', updateResult.statusText);
       
-      if (updateError) {
-        console.error('Error updating status:', updateError);
-        throw new Error(`Database error: ${updateError.message}`);
+      if (updateResult.error) {
+        console.error('Update failed with error:', updateResult.error);
+        throw new Error(`Database update error: ${updateResult.error.message}`);
       }
       
-      // Fetch the updated record separately to ensure we get the latest data
+      // Wait a moment before refetching to ensure the update has propagated
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Fetch the updated record to verify the change
+      console.log('Step 5 - Refetching record to verify update...');
       const { data: updatedRecord, error: refetchError } = await supabase
         .from('incoming_data')
         .select('*')
         .eq('id', recordId)
         .single();
       
-      console.log('Refetch result:', { updatedRecord, refetchError });
+      console.log('Step 6 - Refetch result:', { updatedRecord, refetchError });
       
       if (refetchError) {
         console.error('Error refetching updated record:', refetchError);
         throw new Error(`Error refetching record: ${refetchError.message}`);
       }
       
-      console.log('Status updated successfully:', updatedRecord);
+      console.log('Step 7 - Final verification:');
+      console.log('Status after update:', updatedRecord.status);
+      console.log('Expected status: started');
+      console.log('Update successful:', updatedRecord.status === 'started');
+      
+      if (updatedRecord.status !== 'started') {
+        console.error('WARNING: Update appeared successful but status did not change!');
+        console.error('This might indicate a database trigger, constraint, or RLS policy issue');
+        // Still return the record but with a warning
+      }
+      
+      console.log('=== Status update process complete ===');
       return updatedRecord;
     },
     onSuccess: (updatedRecord) => {
