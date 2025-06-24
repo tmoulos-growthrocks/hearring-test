@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { TestStep } from "@/hooks/useHearingTestFlow";
+import { ReleaseNotes } from "@/components/ReleaseNotes";
 
 interface TopNavigationProps {
   currentStep: TestStep;
@@ -28,25 +29,28 @@ export const TopNavigation = ({ currentStep, onNavigate }: TopNavigationProps) =
   return (
     <div className="bg-white shadow-sm border-b sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-3">
-        <div className="flex items-center space-x-2 overflow-x-auto">
-          {steps.map((stepItem) => (
-            <Button
-              key={stepItem.step}
-              variant={currentStep === stepItem.step ? "default" : "outline"}
-              size="sm"
-              onClick={() => stepItem.enabled && onNavigate(stepItem.step)}
-              disabled={!stepItem.enabled}
-              className={`whitespace-nowrap text-xs px-3 py-1 ${
-                currentStep === stepItem.step 
-                  ? "bg-orange-600 hover:bg-orange-700 text-white" 
-                  : stepItem.enabled
-                  ? "text-gray-600 hover:text-gray-800"
-                  : "text-gray-400 cursor-not-allowed opacity-50"
-              }`}
-            >
-              {stepItem.number}. {stepItem.label}
-            </Button>
-          ))}
+        <div className="flex items-center justify-between">
+          <ReleaseNotes />
+          <div className="flex items-center space-x-2 overflow-x-auto">
+            {steps.map((stepItem) => (
+              <Button
+                key={stepItem.step}
+                variant={currentStep === stepItem.step ? "default" : "outline"}
+                size="sm"
+                onClick={() => stepItem.enabled && onNavigate(stepItem.step)}
+                disabled={!stepItem.enabled}
+                className={`whitespace-nowrap text-xs px-3 py-1 ${
+                  currentStep === stepItem.step 
+                    ? "bg-orange-600 hover:bg-orange-700 text-white" 
+                    : stepItem.enabled
+                    ? "text-gray-600 hover:text-gray-800"
+                    : "text-gray-400 cursor-not-allowed opacity-50"
+                }`}
+              >
+                {stepItem.number}. {stepItem.label}
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -5,7 +5,6 @@ import { TopNavigation } from "@/components/TopNavigation";
 import { EmailCollection } from "@/components/EmailCollection";
 import { ComprehensiveResults } from "@/components/ComprehensiveResults";
 import { DebugInfo } from "@/components/DebugInfo";
-import { ReleaseNotes } from "@/components/ReleaseNotes";
 import { useHearingTestFlow, TestStep } from "@/hooks/useHearingTestFlow";
 
 const Index = () => {
@@ -56,7 +55,6 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <TopNavigation currentStep={currentStep} onNavigate={handleNavigate} />
-      <ReleaseNotes />
       
       <div className="pt-0">
         {currentStep === "landing" && (
