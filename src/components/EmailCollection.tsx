@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Mail, Shield } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface EmailCollectionProps {
   onComplete: (email: string) => void;
@@ -13,13 +14,15 @@ export const EmailCollection = ({ onComplete }: EmailCollectionProps) => {
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [emailError, setEmailError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!email.trim()) {
       setEmailError("Please enter your email address");
       return;
@@ -36,7 +39,42 @@ export const EmailCollection = ({ onComplete }: EmailCollectionProps) => {
     }
     
     setEmailError("");
-    onComplete(email);
+    setIsLoading(true);
+
+    try {
+      // Send data to Zapier webhook
+      const response = await fetch("https://hooks.zapier.com/hooks/catch/447525/ubyp1bq/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        mode: "no-cors",
+        body: JSON.stringify({
+          email: email,
+          consent: consent,
+          timestamp: new Date().toISOString(),
+          source: "hearing_test_app"
+        }),
+      });
+
+      console.log("Webhook triggered with email:", email, "consent:", consent);
+      
+      toast({
+        title: "Success!",
+        description: "Your information has been submitted successfully.",
+      });
+
+      onComplete(email);
+    } catch (error) {
+      console.error("Error sending webhook:", error);
+      toast({
+        title: "Error",
+        description: "There was an issue submitting your information. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +107,7 @@ export const EmailCollection = ({ onComplete }: EmailCollectionProps) => {
               onChange={handleEmailChange}
               placeholder="Enter your email address"
               className="text-lg py-3 px-4"
+              disabled={isLoading}
             />
             {emailError && (
               <p className="text-red-600 text-sm mt-2 text-left">{emailError}</p>
@@ -81,6 +120,7 @@ export const EmailCollection = ({ onComplete }: EmailCollectionProps) => {
               checked={consent}
               onCheckedChange={(checked) => setConsent(checked as boolean)}
               className="mt-1"
+              disabled={isLoading}
             />
             <label htmlFor="consent" className="text-sm text-gray-700 leading-relaxed">
               I agree to receive my hearing test results via email. This information will only be used 
@@ -102,10 +142,10 @@ export const EmailCollection = ({ onComplete }: EmailCollectionProps) => {
         
         <Button 
           onClick={handleSubmit}
-          disabled={!email.trim() || !consent}
+          disabled={!email.trim() || !consent || isLoading}
           className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-300 text-white px-12 py-3 text-lg rounded-full shadow-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none"
         >
-          Get My Results
+          {isLoading ? "Submitting..." : "Get My Results"}
         </Button>
       </div>
     </div>

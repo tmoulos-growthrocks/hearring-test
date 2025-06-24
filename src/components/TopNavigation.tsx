@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { TestStep } from "@/hooks/useHearingTestFlow";
 
@@ -20,8 +19,7 @@ const steps: { step: TestStep; label: string; number: number; enabled: boolean }
   { step: "audioTestSetup", label: "Test Setup", number: 15, enabled: false },
   { step: "readyCheck", label: "Ready", number: 16, enabled: false },
   { step: "audioTest", label: "Audio Test", number: 18, enabled: false },
-  { step: "results", label: "Results", number: 19, enabled: false },
-  { step: "aiResults", label: "AI Results", number: 20, enabled: false }
+  { step: "results", label: "Results", number: 19, enabled: false }
 ];
 
 export const TopNavigation = ({ currentStep, onNavigate }: TopNavigationProps) => {

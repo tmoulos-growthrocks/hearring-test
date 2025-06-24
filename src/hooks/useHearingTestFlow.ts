@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 export type TestStep = 
@@ -15,7 +14,8 @@ export type TestStep =
   | "hearingTestStart" 
   | "audioTest" 
   | "results" 
-  | "emailCollection";
+  | "emailCollection"
+  | "comprehensiveResults";
 
 export const useHearingTestFlow = () => {
   const [currentStep, setCurrentStep] = useState<TestStep>("landing");
