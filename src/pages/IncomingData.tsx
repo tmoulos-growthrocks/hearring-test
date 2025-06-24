@@ -1,5 +1,5 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 const IncomingData = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: incomingData, isLoading, error } = useQuery({
     queryKey: ['incoming_data'],
@@ -27,13 +28,68 @@ const IncomingData = () => {
     },
   });
 
-  const handleStartHearingTest = (record: any) => {
+  const updateStatusMutation = useMutation({
+    mutationFn: async (recordId: string) => {
+      const { data, error } = await supabase
+        .from('incoming_data')
+        .update({ status: 'started' })
+        .eq('id', recordId)
+        .select();
+      
+      if (error) {
+        throw new Error(error.message);
+      }
+      
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['incoming_data'] });
+    },
+  });
+
+  const handleStartHearingTest = async (record: any) => {
     console.log('Starting hearing test for:', record);
-    toast({
-      title: "Starting Hearing Test",
-      description: `Initiating test for ${record.first_name} ${record.last_name}`,
-    });
-    navigate('/');
+    
+    try {
+      await updateStatusMutation.mutateAsync(record.id);
+      toast({
+        title: "Hearing Test Started",
+        description: `Test initiated for ${record.first_name} ${record.last_name}`,
+      });
+      navigate('/');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start hearing test",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'started':
+        return 'text-green-600 font-medium';
+      case 'completed':
+        return 'text-blue-600 font-medium';
+      case 'pending':
+      default:
+        return 'text-gray-600';
+    }
+  };
+
+  const getButtonVariant = (status: string) => {
+    if (status === 'started') {
+      return 'bg-green-600 hover:bg-green-700';
+    }
+    return 'bg-blue-600 hover:bg-blue-700';
+  };
+
+  const getButtonText = (status: string) => {
+    if (status === 'started') {
+      return 'Test Started';
+    }
+    return 'Start Hearing Test';
   };
 
   if (isLoading) {
@@ -71,6 +127,7 @@ const IncomingData = () => {
                     <TableHead>First Name</TableHead>
                     <TableHead>Last Name</TableHead>
                     <TableHead>Source</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Timestamp</TableHead>
                     <TableHead>Created At</TableHead>
                     <TableHead>Action</TableHead>
@@ -89,6 +146,11 @@ const IncomingData = () => {
                         {record.source || 'N/A'}
                       </TableCell>
                       <TableCell>
+                        <span className={getStatusColor(record.status || 'pending')}>
+                          {(record.status || 'pending').charAt(0).toUpperCase() + (record.status || 'pending').slice(1)}
+                        </span>
+                      </TableCell>
+                      <TableCell>
                         {record.timestamp ? 
                           new Date(record.timestamp).toLocaleString() : 'N/A'
                         }
@@ -99,9 +161,10 @@ const IncomingData = () => {
                       <TableCell>
                         <Button 
                           onClick={() => handleStartHearingTest(record)}
-                          className="bg-blue-600 hover:bg-blue-700"
+                          className={getButtonVariant(record.status || 'pending')}
+                          disabled={updateStatusMutation.isPending}
                         >
-                          Start Hearing Test
+                          {getButtonText(record.status || 'pending')}
                         </Button>
                       </TableCell>
                     </TableRow>
