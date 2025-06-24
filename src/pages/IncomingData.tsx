@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -31,24 +32,47 @@ const IncomingData = () => {
     mutationFn: async (recordId: string) => {
       console.log('Updating status for record:', recordId);
       
-      // Update the record without using .single() to avoid the error
+      // First, let's verify the record exists and log its current state
+      const { data: existingRecord, error: fetchError } = await supabase
+        .from('incoming_data')
+        .select('*')
+        .eq('id', recordId);
+      
+      console.log('Existing record query result:', { existingRecord, fetchError });
+      
+      if (fetchError) {
+        console.error('Error fetching record:', fetchError);
+        throw new Error(`Error fetching record: ${fetchError.message}`);
+      }
+      
+      if (!existingRecord || existingRecord.length === 0) {
+        console.error('No record found with ID:', recordId);
+        throw new Error(`No record found with ID: ${recordId}`);
+      }
+      
+      console.log('Found existing record:', existingRecord[0]);
+      
+      // Now attempt the update
       const { data, error } = await supabase
         .from('incoming_data')
         .update({ status: 'started' })
         .eq('id', recordId)
         .select();
       
+      console.log('Update query result:', { data, error });
+      
       if (error) {
         console.error('Error updating status:', error);
-        throw new Error(error.message);
+        throw new Error(`Database error: ${error.message}`);
       }
       
       if (!data || data.length === 0) {
-        throw new Error('No record was updated. Record may not exist.');
+        console.error('Update succeeded but no data returned');
+        throw new Error('Update query succeeded but no records were returned');
       }
       
       console.log('Status updated successfully:', data[0]);
-      return data[0]; // Return the first (and should be only) updated record
+      return data[0];
     },
     onSuccess: (updatedRecord) => {
       console.log('Mutation successful, invalidating queries');
