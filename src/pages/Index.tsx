@@ -1,3 +1,4 @@
+
 import { LandingPage } from "@/components/LandingPage";
 import { HowItWorks } from "@/components/HowItWorks";
 import { TestFlowManager } from "@/components/TestFlowManager";
@@ -20,6 +21,7 @@ const Index = () => {
     userEmail,
     userFirstName,
     userLastName,
+    setUserEmail,
     handleUserInfoComplete,
     handleQuestionnaireComplete,
     handleQuietPlaceNext,
@@ -43,6 +45,7 @@ const Index = () => {
   };
 
   const handleEmailComplete = (email: string) => {
+    setUserEmail(email);
     setCurrentStep("comprehensiveResults");
   };
 
